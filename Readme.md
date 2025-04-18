@@ -1,4 +1,4 @@
-# AI Chat Scroller 🚀
+# AI Chat Scroller
 ![Logo](images/logo.png)
 
 **AI Chat Scroller** is a lightweight Chrome Extension that enhances your experience with AI chat platforms like ChatGPT, Grok, and Claude.
