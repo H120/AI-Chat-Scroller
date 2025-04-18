@@ -32,7 +32,7 @@ setTimeout(() => {
             targetDivs.forEach((div, idx) => {
               const numberSpan = document.createElement('span');
               numberSpan.className = 'scroller-number-label';
-              numberSpan.innerText = `Message Numebr: ${targetDivs.length - idx}`;
+              numberSpan.innerText = `No. ${targetDivs.length - idx}`;
               numberSpan.style.display= localStorage.getItem('scrollerVisibility');
               numberSpan.style = `
                 position: sticky;
