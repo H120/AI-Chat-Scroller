@@ -1,179 +1,269 @@
 setTimeout(() => {
     (function () {
+      let currentIndex = 0;
+
       console.log("Scroller script started.");
-        const currentUrl = window.location.href;
-        const validUrls = [
-          "https://chatgpt.com/",
-          "https://grok.com/chat/",
-          "https://claude.ai/chat/",
-          "https://copilot.microsoft.com/chats/"
-        ];
-        if (!validUrls.some(url => currentUrl.startsWith(url))) {
-          console.log("Scroller script disabled: not a valid URL.");
-          return;
-        }
 
-        let targetDivs = [];
-        let selector = '';
+      // Bookmark data key
+      const BOOKMARKS_KEY = 'scrollerBookmarks';
 
-        // Function to update the div list
-        function updateDivs() {
-            targetDivs = [];
-          
-            if (currentUrl.startsWith("https://chatgpt.com/c/")) {
-              selector = "article.text-token-text-primary.w-full";
-            } else if (currentUrl.startsWith("https://grok.com/chat/")) {
-              selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
-            } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
-              selector = "div[data-test-render-count]";
-            } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/")) {
-              selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
-            }            
-          
-            targetDivs = [...document.querySelectorAll(selector)].reverse();
-          
-            // Remove existing numbers
-            document.querySelectorAll('.scroller-number-label').forEach(el => el.remove());
-          
-            // Add new numbers
-            targetDivs.forEach((div, idx) => {
-              const numberSpan = document.createElement('span');
-              numberSpan.className = 'scroller-number-label';
-              numberSpan.innerText = `No. ${targetDivs.length - idx}`;
-              numberSpan.style.display= localStorage.getItem('scrollerVisibility');
+      // Helper to load bookmarks
+      function loadBookmarks() {
+        return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '{}');
+      }
+
+      // Helper to save bookmarks
+      function saveBookmarks(bookmarks) {
+        localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+      }
+      const currentUrl = window.location.href;
+      const validUrls = [
+        "https://chatgpt.com/",
+        "https://grok.com/chat/",
+        "https://claude.ai/chat/",
+        "https://copilot.microsoft.com/chats/"
+      ];
+      if (!validUrls.some(url => currentUrl.startsWith(url))) {
+        console.log("Scroller script disabled: not a valid URL.");
+        return;
+      }
+
+      let targetDivs = [];
+      let selector = '';
+
+      // Function to update the div list
+      function updateDivs() {
+          targetDivs = [];
+        
+          if (currentUrl.startsWith("https://chatgpt.com/c/")) {
+            selector = "article.text-token-text-primary.w-full";
+          } else if (currentUrl.startsWith("https://grok.com/chat/")) {
+            selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
+          } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
+            selector = "div[data-test-render-count]";
+          } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/")) {
+            selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+          }            
+        
+          targetDivs = [...document.querySelectorAll(selector)].reverse();
+        
+          // Remove existing numbers
+          document.querySelectorAll('.scroller-number-label').forEach(el => el.remove());
+        
+          // Add new numbers
+          targetDivs.forEach((div, idx) => {
+            const numberSpan = document.createElement('span');
+            numberSpan.className = 'scroller-number-label';
+            numberSpan.id = 'scroller-number-label'+(targetDivs.length - idx);
+            numberSpan.innerText = `No. ${targetDivs.length - idx}`;
+            
+            const url = window.location.href;
+            const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+            const current = bookmarks[url] || [];
+            const bookmarkedNumbers = bookmarks[url] || [];
+            bookmarkViewer.innerHTML="";
+            bookmarkedNumbers.forEach(number => {
+              const bookmarkbtn = document.createElement("button");
+              bookmarkbtn.textContent = `No. ${number}`;
+              bookmarkbtn.style.margin = "auto";
+              bookmarkbtn.style.marginTop = "5px";
+              bookmarkbtn.style.padding = "5px 10px";
+              bookmarkbtn.style.cursor = "pointer";
+              bookmarkbtn.style.backgroundColor = "#D8586D";
+              bookmarkbtn.style.color = "white";
+              bookmarkbtn.style.border = "none";
+              bookmarkbtn.style.borderRadius = "5px";
+              bookmarkbtn.style.fontSize = ".5vw";
+            
+              bookmarkbtn.addEventListener("click", () => {
+                const target = document.getElementById(`scroller-number-label${number}`);
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth", block: "start" });
+                  currentIndex = targetDivs.length-number;
+                  counter.innerText = `${number} / ${targetDivs.length}`;
+                }
+              });
+            
+              bookmarkViewer.appendChild(bookmarkbtn);
+            });
+            numberSpan.style.display= localStorage.getItem('scrollerVisibility');
+            numberSpan.style = `
+              cursor: pointer;
+              position: sticky;
+              top: 0;
+              margin-right: 10px;
+              background: #00a6ed;
+              color: white;
+              font-size: 14px;
+              padding: 2px 6px;
+              border-radius: 6px;
+              z-index: 10;
+              float: right;`;
+            if (currentUrl.startsWith("https://chatgpt.com/")) {
               numberSpan.style = `
-                position: sticky;
-                top: 0;
-                margin-right: 10px;
-                background: #00a6ed;
-                color: white;
-                font-size: 14px;
-                padding: 2px 6px;
-                border-radius: 6px;
-                z-index: 10;
-                float: right;`;
-              if (currentUrl.startsWith("https://chatgpt.com/")) {
-                numberSpan.style = `
-                position: sticky;
-                top: 70px;
-                margin-right: 70px;
-                background: #00a6ed;
-                color: white;
-                font-size: 14px;
-                padding: 2px 6px;
-                border-radius: 6px;
-                z-index: 10;
-                float: left;`;
-              }else if(currentUrl.startsWith("https://claude.ai/chat/")){
-                numberSpan.style = `
-                position: sticky;
-                top: 10px;
-                margin-right: 10px;
-                background: #00a6ed;
-                color: white;
-                font-size: 14px;
-                padding: 2px 6px;
-                border-radius: 6px;
-                z-index: 10;
-                float: right;`;
+              cursor: pointer;
+              position: sticky;
+              top: 70px;
+              margin-right: 70px;
+              background: #00a6ed;
+              color: white;
+              font-size: 14px;
+              padding: 2px 6px;
+              border-radius: 6px;
+              z-index: 10;
+              float: left;`;
+            }else if(currentUrl.startsWith("https://claude.ai/chat/")){
+              numberSpan.style = `
+              cursor: pointer;
+              position: sticky;
+              top: 10px;
+              margin-right: 10px;
+              background: #00a6ed;
+              color: white;
+              font-size: 14px;
+              padding: 2px 6px;
+              border-radius: 6px;
+              z-index: 10;
+              float: right;`;
+            }
+
+            // If already bookmarked, set orange background
+            if (current.includes(targetDivs.length - idx)) {
+              numberSpan.style.backgroundColor = "#D8586D";
+            }
+            // ✅ Add click listener only to the label
+            numberSpan.addEventListener("click", (e) => {
+              numberSpan.style.backgroundColor = "#D8586D";
+
+              e.stopPropagation(); // prevent bubbling
+            
+              const url = window.location.href;
+              let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+            
+              // Get current list for this URL, or empty array
+              const current = bookmarks[url] || [];
+            
+              if (!current.includes(targetDivs.length - idx)) {
+                // Add the number, keeping only last 3
+                current.push(targetDivs.length - idx);
+                showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
+                if (current.length > 3) {
+                  current.shift(); // remove the oldest
+                }
+              }else{
+                showToast(`❗${targetDivs.length - idx} Already bookmarked`);
               }
-              div.prepend(numberSpan);
+            
+              bookmarks[url] = current;
+              localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+            
             });
           
-            // Show/hide UI
-            const showUI = targetDivs.length > 0;
-            upBtn.style.display = localStorage.getItem('scrollerVisibility');
-            downBtn.style.display = localStorage.getItem('scrollerVisibility');
-            counter.style.display = localStorage.getItem('scrollerVisibility');
-            // toggleBtn.style.display = block;
-            updateCounter();
-          }
-          
-          // Scroll buttons
-          const upBtn = document.createElement('button');
-            upBtn.innerText = "⬆️";
-            upBtn.title = "Scroll Up";
-            upBtn.style.backgroundColor = "#00a6ed";
-            upBtn.style.border= "none";
-            upBtn.style.borderRadius= "10px 10px 0 0";
-            upBtn.style.textAlign = "center";
-            upBtn.style.fontSize = "1.2vw";
-            upBtn.style.width = "fit-content";
-            upBtn.style.height = "fit-content";
-            upBtn.style.padding = "5px";
-            upBtn.style.margin = "auto";
+            div.prepend(numberSpan);
+          });
 
-          const downBtn = document.createElement('button');
-            downBtn.innerText = "⬇️";
-            downBtn.title = "Scroll Down";
-            downBtn.style.backgroundColor = "#00a6ed";
-            downBtn.style.border= "none";
-            downBtn.style.borderRadius= "0 0 10px 10px";
-            downBtn.style.textAlign = "center";
-            downBtn.style.fontSize = "1.2vw";
-            downBtn.style.width = "fit-content";
-            downBtn.style.height = "fit-content";
-            downBtn.style.padding = "5px";
-            downBtn.style.margin = "auto";
+          upBtn.style.display = localStorage.getItem('scrollerVisibility');
+          downBtn.style.display = localStorage.getItem('scrollerVisibility');
+          counter.style.display = localStorage.getItem('scrollerVisibility');
+          bookmarkViewer.style.display = localStorage.getItem('scrollerVisibility');
+          // toggleBtn.style.display = block;
+          updateCounter();
+        }
           
-          // Counter
-          const counter = document.createElement('div');
-            counter.style = `
-            background-color: #111827;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            text-align: center;
-            font-size: .7vw;
-            font-family: sans-serif;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            white-space: nowrap;`;
-            
-          // Show/Hide button
-          const toggleBtn = document.createElement('button');
-            toggleBtn.innerText = "AI Scroller";
-            toggleBtn.style = `
-            width: fit-content;
-            padding: 5px 8px;
-            background-color: #00a6ed;
-            color: white;
-            font-size: .6vw;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;`;
-            toggleBtn.title = "Show/Hide Buttons";
-          
-          const scrollerButtonDiv = document.createElement('div');
-            scrollerButtonDiv.style = `
-            height: fit-content;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;`;
-          scrollerButtonDiv.appendChild(upBtn);
-          scrollerButtonDiv.appendChild(counter);
-          scrollerButtonDiv.appendChild(downBtn);
-          
-          const scrollerDiv = document.createElement('div');
-            scrollerDiv.style = `
-            position: fixed;
-            width: 4vw;
-            height: 10vh;
-            right: 2vw;
-            top: 15vh;
-            height: fit-content;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            gap: 10px;`;
-          
-          scrollerDiv.appendChild(toggleBtn);
-          scrollerDiv.appendChild(scrollerButtonDiv);
-          
-          document.body.appendChild(scrollerDiv);
-        let currentIndex = 0;
+        // Scroll buttons
+        const upBtn = document.createElement('button');
+          upBtn.innerText = "⬆️";
+          upBtn.title = "Scroll Up";
+          upBtn.style.backgroundColor = "#00a6ed";
+          upBtn.style.border= "none";
+          upBtn.style.borderRadius= "10px 10px 0 0";
+          upBtn.style.textAlign = "center";
+          upBtn.style.fontSize = "1.2vw";
+          upBtn.style.width = "fit-content";
+          upBtn.style.height = "fit-content";
+          upBtn.style.padding = "5px";
+          upBtn.style.margin = "auto";
+
+        const downBtn = document.createElement('button');
+          downBtn.innerText = "⬇️";
+          downBtn.title = "Scroll Down";
+          downBtn.style.backgroundColor = "#00a6ed";
+          downBtn.style.border= "none";
+          downBtn.style.borderRadius= "0 0 10px 10px";
+          downBtn.style.textAlign = "center";
+          downBtn.style.fontSize = "1.2vw";
+          downBtn.style.width = "fit-content";
+          downBtn.style.height = "fit-content";
+          downBtn.style.padding = "5px";
+          downBtn.style.margin = "auto";
+        
+        // Counter
+        const counter = document.createElement('div');
+          counter.style = `
+          background-color: #111827;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 6px;
+          text-align: center;
+          font-size: .7vw;
+          font-family: sans-serif;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+          white-space: nowrap;`;
+
+        // Show/Hide button
+        const toggleBtn = document.createElement('button');
+          toggleBtn.innerText = "AI Scroller";
+          toggleBtn.style = `
+          width: fit-content;
+          padding: 5px 8px;
+          background-color: #00a6ed;
+          color: white;
+          font-size: .6vw;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;`;
+          toggleBtn.title = "Show/Hide Buttons";
+        
+        const scrollerButtonDiv = document.createElement('div');
+          scrollerButtonDiv.style = `
+          height: fit-content;
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;`;
+        const bookmarkViewer = document.createElement('div');
+        bookmarkViewer.style = `
+          height: fit-content;
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          margin-top: 10px;
+          margin: auto;`;
+        scrollerButtonDiv.appendChild(upBtn);
+        scrollerButtonDiv.appendChild(counter);
+        scrollerButtonDiv.appendChild(downBtn);
+        scrollerButtonDiv.appendChild(bookmarkViewer);
+        
+        const scrollerDiv = document.createElement('div');
+          scrollerDiv.style = `
+          position: fixed;
+          width: 4vw;
+          right: 2vw;
+          top: 15vh;
+          height: fit-content;
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          gap: 10px;
+          margin: auto;`;
+        
+        scrollerDiv.appendChild(toggleBtn);
+        scrollerDiv.appendChild(scrollerButtonDiv);
+        
+        document.body.appendChild(scrollerDiv);
 
         function updateCounter() {
             counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
@@ -222,7 +312,31 @@ setTimeout(() => {
             updateDivs(); // Refresh the list
             updateCounter(); // Reset counter display
           }
-        }, 3000); // Check every 1 second
+        }, 3000); // Check every 3 second
         
     })();
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.innerText = message;
+      toast.style = `
+        position: fixed;
+        bottom: 5vh;
+        right: 2vw;
+        background-color: #00a6ed;
+        color: white;
+        padding: 10px 14px;
+        font-size: .9vw;
+        border-radius: 8px;
+        z-index: 9999;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        transition: opacity 0.3s;
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+      }, 1500);
+    }
+    
 }, 5000); // Wait 5 seconds before running the script
