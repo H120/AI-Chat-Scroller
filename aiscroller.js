@@ -63,19 +63,19 @@ setTimeout(() => {
             const bookmarkedNumbers = bookmarks[url] || [];
             bookmarkViewer.innerHTML="";
             bookmarkedNumbers.forEach(number => {
-              const bookmarkbtn = document.createElement("button");
-              bookmarkbtn.textContent = `No. ${number}`;
-              bookmarkbtn.style.margin = "auto";
-              bookmarkbtn.style.marginTop = "5px";
-              bookmarkbtn.style.padding = "5px 10px";
-              bookmarkbtn.style.cursor = "pointer";
-              bookmarkbtn.style.backgroundColor = "#D8586D";
-              bookmarkbtn.style.color = "white";
-              bookmarkbtn.style.border = "none";
-              bookmarkbtn.style.borderRadius = "5px";
-              bookmarkbtn.style.fontSize = ".5vw";
+              const bookmarkBtn = document.createElement("button");
+              bookmarkBtn.textContent = `No. ${number}`;
+              bookmarkBtn.style.margin = "auto";
+              bookmarkBtn.style.marginTop = "5px";
+              bookmarkBtn.style.padding = "5px 10px";
+              bookmarkBtn.style.cursor = "pointer";
+              bookmarkBtn.style.backgroundColor = "#D8586D";
+              bookmarkBtn.style.color = "white";
+              bookmarkBtn.style.border = "none";
+              bookmarkBtn.style.borderRadius = "5px";
+              bookmarkBtn.style.fontSize = ".5vw";
             
-              bookmarkbtn.addEventListener("click", () => {
+              bookmarkBtn.addEventListener("click", () => {
                 const target = document.getElementById(`scroller-number-label${number}`);
                 if (target) {
                   target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -84,7 +84,7 @@ setTimeout(() => {
                 }
               });
             
-              bookmarkViewer.appendChild(bookmarkbtn);
+              bookmarkViewer.appendChild(bookmarkBtn);
             });
             numberSpan.style.display= localStorage.getItem('scrollerVisibility');
             numberSpan.style = `
@@ -276,17 +276,22 @@ setTimeout(() => {
         }
 
         upBtn.addEventListener("click", () => {
-            if (currentIndex < targetDivs.length - 1) {
-                scrollTo(currentIndex + 1);
-            }
+          gotoNext();
         });
 
         downBtn.addEventListener("click", () => {
-            if (currentIndex > 0) {
-                scrollTo(currentIndex - 1);
-            }
+          gotoPrev();
         });
-
+        function gotoNext(){
+          if (currentIndex < targetDivs.length - 1) {
+            scrollTo(currentIndex + 1);
+          }
+        }
+        function gotoPrev(){
+          if (currentIndex > 0) {
+            scrollTo(currentIndex - 1);
+          }
+        }
         // Toggle visibility of buttons and counter
         toggleBtn.addEventListener("click", () => {
           const isVisible = upBtn.style.display !== "none";
@@ -338,5 +343,19 @@ setTimeout(() => {
         setTimeout(() => toast.remove(), 500);
       }, 1500);
     }
-    
+    // document.addEventListener(
+    //   "keyup",
+    //   (event) => {
+    //     const keyName = event.key;
+
+    //     if (keyName === ".") {
+    //       gotoNext();
+    //     }
+    //     if (keyName === ",") {
+    //       gotoPrev();
+    //     }
+        
+    //   },
+    //   false,
+    // );
 }, 5000); // Wait 5 seconds before running the script
