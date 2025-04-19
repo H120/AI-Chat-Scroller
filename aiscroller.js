@@ -2,7 +2,12 @@ setTimeout(() => {
     (function () {
       console.log("Scroller script started.");
         const currentUrl = window.location.href;
-        const validUrls = ["https://chatgpt.com/", "https://grok.com/chat/", "https://claude.ai/chat/"];
+        const validUrls = [
+          "https://chatgpt.com/",
+          "https://grok.com/chat/",
+          "https://claude.ai/chat/",
+          "https://copilot.microsoft.com/chats/"
+        ];
         if (!validUrls.some(url => currentUrl.startsWith(url))) {
           console.log("Scroller script disabled: not a valid URL.");
           return;
@@ -21,7 +26,9 @@ setTimeout(() => {
               selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
             } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
               selector = "div[data-test-render-count]";
-            }
+            } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/")) {
+              selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+            }            
           
             targetDivs = [...document.querySelectorAll(selector)].reverse();
           
@@ -38,7 +45,7 @@ setTimeout(() => {
                 position: sticky;
                 top: 0;
                 margin-right: 10px;
-                background: #2563eb;
+                background: #00a6ed;
                 color: white;
                 font-size: 14px;
                 padding: 2px 6px;
@@ -50,19 +57,19 @@ setTimeout(() => {
                 position: sticky;
                 top: 70px;
                 margin-right: 70px;
-                background: #2563eb;
+                background: #00a6ed;
                 color: white;
                 font-size: 14px;
                 padding: 2px 6px;
                 border-radius: 6px;
                 z-index: 10;
-                float: right;`;
+                float: left;`;
               }else if(currentUrl.startsWith("https://claude.ai/chat/")){
                 numberSpan.style = `
                 position: sticky;
                 top: 10px;
                 margin-right: 10px;
-                background: #2563eb;
+                background: #00a6ed;
                 color: white;
                 font-size: 14px;
                 padding: 2px 6px;
@@ -73,30 +80,14 @@ setTimeout(() => {
               div.prepend(numberSpan);
             });
           
-         
             // Show/hide UI
-            
             const showUI = targetDivs.length > 0;
             upBtn.style.display = localStorage.getItem('scrollerVisibility');
             downBtn.style.display = localStorage.getItem('scrollerVisibility');
             counter.style.display = localStorage.getItem('scrollerVisibility');
             // toggleBtn.style.display = block;
-          
             updateCounter();
           }
-          
-          const btnStyle = `
-            position: fixed;
-            right: 20px;
-            z-index: 9999;
-            padding: 1px;
-            background-color: #2563eb;
-            color: white;
-            font-size: 28px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);`;
           
           // Scroll buttons
           const upBtn = document.createElement('button');
@@ -106,10 +97,10 @@ setTimeout(() => {
             upBtn.style.border= "none";
             upBtn.style.borderRadius= "10px 10px 0 0";
             upBtn.style.textAlign = "center";
-            upBtn.style.fontSize = "32px";
+            upBtn.style.fontSize = "1.2vw";
             upBtn.style.width = "fit-content";
             upBtn.style.height = "fit-content";
-            upBtn.style.padding = "0px";
+            upBtn.style.padding = "5px";
             upBtn.style.margin = "auto";
 
           const downBtn = document.createElement('button');
@@ -119,10 +110,10 @@ setTimeout(() => {
             downBtn.style.border= "none";
             downBtn.style.borderRadius= "0 0 10px 10px";
             downBtn.style.textAlign = "center";
-            downBtn.style.fontSize = "32px";
+            downBtn.style.fontSize = "1.2vw";
             downBtn.style.width = "fit-content";
             downBtn.style.height = "fit-content";
-            downBtn.style.padding = "0px";
+            downBtn.style.padding = "5px";
             downBtn.style.margin = "auto";
           
           // Counter
@@ -133,19 +124,20 @@ setTimeout(() => {
             padding: 6px 12px;
             border-radius: 6px;
             text-align: center;
-            font-size: 16px;
+            font-size: .7vw;
             font-family: sans-serif;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);`;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            white-space: nowrap;`;
             
           // Show/Hide button
           const toggleBtn = document.createElement('button');
             toggleBtn.innerText = "AI Scroller";
             toggleBtn.style = `
             width: fit-content;
-            padding: 5px 8px; 
-            background-color: #2563eb;
+            padding: 5px 8px;
+            background-color: #00a6ed;
             color: white;
-            font-size: 12px;
+            font-size: .6vw;
             border: none;
             border-radius: 8px;
             cursor: pointer;`;
@@ -165,8 +157,10 @@ setTimeout(() => {
           const scrollerDiv = document.createElement('div');
             scrollerDiv.style = `
             position: fixed;
-            right: 20px;
-            top: 200px;
+            width: 4vw;
+            height: 10vh;
+            right: 2vw;
+            top: 15vh;
             height: fit-content;
             z-index: 9999;
             display: flex;
