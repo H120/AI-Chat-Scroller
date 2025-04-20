@@ -8,7 +8,7 @@
 - Scroll through messages using up/down buttons
 - Toggle the UI on or off
 - Remembers UI state across sessions
-- Bookmark messages for quick reference
+- **Bookmark messages for quick reference (stored separately for each chat page)**
 - Runs only on supported AI chat Websites
 
 ### 🧠 Supported Platforms
