@@ -9,9 +9,13 @@ setTimeout(() => {
       const currentUrl = window.location.href;
       const validUrls = [
         "https://chatgpt.com/",
+        "chatgpt.com/",
         "https://grok.com/chat/",
+        "grok.com/chat/",
         "https://claude.ai/chat/",
-        "https://copilot.microsoft.com/chats/"
+        "claude.ai/chat/",
+        "https://copilot.microsoft.com/chats/",
+        "copilot.microsoft.com/chats/"
       ];
       if (!validUrls.some(url => currentUrl.startsWith(url))) {
         console.log("Scroller script disabled: not a valid URL.");
@@ -25,13 +29,13 @@ setTimeout(() => {
       function updateDivs() {
           targetDivs = [];
         
-          if (currentUrl.startsWith("https://chatgpt.com/c/")) {
+          if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/")) {
             selector = "article.text-token-text-primary.w-full";
-          } else if (currentUrl.startsWith("https://grok.com/chat/")) {
+          } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
             selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
-          } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
+          } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
             selector = "div[data-test-render-count]";
-          } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/")) {
+          } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
             selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
           }            
         
