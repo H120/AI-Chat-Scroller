@@ -1,4 +1,6 @@
 setTimeout(() => {
+  const doubleClickDuration= 300;
+
     (function () {
       let currentIndex = 0;
 
@@ -122,6 +124,9 @@ setTimeout(() => {
             }
             // ✅ Add click listener only to the label
             numberSpan.addEventListener("click", (e) => {
+              clickTimeout = setTimeout(() => {
+                console.log("Checking Double Click");
+
               numberSpan.style.backgroundColor = "#D8586D";
 
               e.stopPropagation(); // prevent bubbling
@@ -145,9 +150,12 @@ setTimeout(() => {
             
               bookmarks[url] = current;
               localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-            
+            }, doubleClickDuration);
             });
-          
+            numberSpan.addEventListener("dblclick", (e) => {
+              clearTimeout(clickTimeout);
+              pinMessage("OK")
+            });
             div.prepend(numberSpan);
           });
 
@@ -265,10 +273,16 @@ setTimeout(() => {
         }
 
         upBtn.addEventListener("click", () => {
-          gotoNext();
+          clickTimeout = setTimeout(() => {
+            console.log("Checking Double Click"); 
+            gotoNext();
+          }, doubleClickDuration);
         });
         upBtn.addEventListener("dblclick", () => {
-          gotoFirst();
+          clickTimeout = setTimeout(() => {
+            console.log("Checking Double Click");
+            gotoFirst();
+          }, doubleClickDuration);
         });
         function gotoFirst(){
           scrollTo(targetDivs.length - 1);
@@ -281,9 +295,13 @@ setTimeout(() => {
         }
 
         downBtn.addEventListener("click", () => {
-          gotoPrev();
+          clickTimeout = setTimeout(() => {
+            console.log("Checking Double Click");
+            gotoPrev();
+          }, doubleClickDuration);
         });
         downBtn.addEventListener("dblclick", () => {
+          clearTimeout(clickTimeout);
           gotoLast();
         });
         function gotoLast(){
@@ -344,7 +362,30 @@ setTimeout(() => {
       setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 500);
-      }, 1500);
+      }, 2000);
+    }
+
+    function pinMessage(message) {
+      const toast = document.createElement('div');
+      toast.innerText = message;
+      toast.style = `
+        position: fixed;
+        top: 5vh;
+        right: 2vw;
+        background-color: #00a6ed;
+        color: white;
+        padding: 10px 14px;
+        font-size: .9vw;
+        border-radius: 8px;
+        z-index: 9999;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        transition: opacity 0.3s;
+      `;
+      document.body.appendChild(toast);
+      // setTimeout(() => {
+      //   toast.style.opacity = '0';
+      //   setTimeout(() => toast.remove(), 500);
+      // }, 2000);
     }
     // document.addEventListener(
     //   "keyup",
