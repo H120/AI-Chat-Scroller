@@ -4,18 +4,6 @@ setTimeout(() => {
 
       console.log("Scroller script started.");
 
-      // Bookmark data key
-      const BOOKMARKS_KEY = 'scrollerBookmarks';
-
-      // Helper to load bookmarks
-      function loadBookmarks() {
-        return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '{}');
-      }
-
-      // Helper to save bookmarks
-      function saveBookmarks(bookmarks) {
-        localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
-      }
       const currentUrl = window.location.href;
       const validUrls = [
         "https://chatgpt.com/",
@@ -61,10 +49,10 @@ setTimeout(() => {
             const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
             const current = bookmarks[url] || [];
             const bookmarkedNumbers = bookmarks[url] || [];
-            bookmarkViewer.innerHTML="";
             bookmarkedNumbers.forEach(number => {
               const bookmarkBtn = document.createElement("button");
               bookmarkBtn.textContent = `No. ${number}`;
+              bookmarkBtn.style.width = "full";
               bookmarkBtn.style.margin = "auto";
               bookmarkBtn.style.marginTop = "5px";
               bookmarkBtn.style.padding = "5px 10px";
@@ -83,7 +71,8 @@ setTimeout(() => {
                   counter.innerText = `${number} / ${targetDivs.length}`;
                 }
               });
-            
+              
+              bookmarkViewer.innerHTML="";
               bookmarkViewer.appendChild(bookmarkBtn);
             });
             numberSpan.style.display= localStorage.getItem('scrollerVisibility');
@@ -278,14 +267,28 @@ setTimeout(() => {
         upBtn.addEventListener("click", () => {
           gotoNext();
         });
-
-        downBtn.addEventListener("click", () => {
-          gotoPrev();
+        upBtn.addEventListener("dblclick", () => {
+          gotoFirst();
         });
+        function gotoFirst(){
+          scrollTo(targetDivs.length - 1);
+          currentIndex= targetDivs.length - 1;
+        }
         function gotoNext(){
           if (currentIndex < targetDivs.length - 1) {
             scrollTo(currentIndex + 1);
           }
+        }
+
+        downBtn.addEventListener("click", () => {
+          gotoPrev();
+        });
+        downBtn.addEventListener("dblclick", () => {
+          gotoLast();
+        });
+        function gotoLast(){
+          scrollTo(0);
+          currentIndex= 0;
         }
         function gotoPrev(){
           if (currentIndex > 0) {
