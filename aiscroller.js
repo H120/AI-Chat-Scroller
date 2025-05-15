@@ -175,7 +175,7 @@ setTimeout(() => {
           
         // Scroll buttons
         const upBtn = document.createElement('button');
-          upBtn.innerText = "⬆️";
+          upBtn.innerText = "🢁";
           upBtn.title = "Scroll Up";
           upBtn.style.backgroundColor = "#00a6ed";
           upBtn.style.border= "none";
@@ -183,12 +183,13 @@ setTimeout(() => {
           upBtn.style.textAlign = "center";
           upBtn.style.fontSize = "1.2vw";
           upBtn.style.width = "fit-content";
+          upBtn.style.minWidth = "2.6vw";
           upBtn.style.height = "fit-content";
           upBtn.style.padding = "5px";
           upBtn.style.margin = "auto";
 
         const downBtn = document.createElement('button');
-          downBtn.innerText = "⬇️";
+          downBtn.innerText = "🢃";
           downBtn.title = "Scroll Down";
           downBtn.style.backgroundColor = "#00a6ed";
           downBtn.style.border= "none";
@@ -196,6 +197,7 @@ setTimeout(() => {
           downBtn.style.textAlign = "center";
           downBtn.style.fontSize = "1.2vw";
           downBtn.style.width = "fit-content";
+          downBtn.style.minWidth = "2.6vw";
           downBtn.style.height = "fit-content";
           downBtn.style.padding = "5px";
           downBtn.style.margin = "auto";
