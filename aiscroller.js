@@ -1,5 +1,7 @@
 setTimeout(() => {
-  const doubleClickDuration= 300;
+  const doubleClickDuration= 400;
+  const pinnedMessageLimit= 200;
+  let clickTimeout;
 
     (function () {
       let currentIndex = 0;
@@ -28,7 +30,6 @@ setTimeout(() => {
       // Function to update the div list
       function updateDivs() {
           targetDivs = [];
-        
           if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/")) {
             selector = "article.text-token-text-primary.w-full";
           } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
@@ -84,6 +85,7 @@ setTimeout(() => {
             numberSpan.style.display= localStorage.getItem('scrollerVisibility');
             numberSpan.style = `
               cursor: pointer;
+              user-select: none;
               position: sticky;
               top: 0;
               margin-right: 10px;
@@ -128,37 +130,37 @@ setTimeout(() => {
             }
             // ✅ Add click listener only to the label
             numberSpan.addEventListener("click", (e) => {
-              clickTimeout = setTimeout(() => {
-                console.log("Checking Double Click");
+              clickTimeoutNumberSpan = setTimeout(() => {
+                console.log("Checking For Double Click");
 
-              numberSpan.style.backgroundColor = "#D8586D";
+                numberSpan.style.backgroundColor = "#D8586D";
 
-              e.stopPropagation(); // prevent bubbling
-            
-              const url = window.location.href;
-              let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-            
-              // Get current list for this URL, or empty array
-              const current = bookmarks[url] || [];
-            
-              if (!current.includes(targetDivs.length - idx)) {
-                // Add the number, keeping only last 3
-                current.push(targetDivs.length - idx);
-                showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
-                if (current.length > 3) {
-                  current.shift(); // remove the oldest
+                e.stopPropagation(); // prevent bubbling
+              
+                const url = window.location.href;
+                let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+              
+                // Get current list for this URL, or empty array
+                const current = bookmarks[url] || [];
+              
+                if (!current.includes(targetDivs.length - idx)) {
+                  // Add the number, keeping only last 3
+                  current.push(targetDivs.length - idx);
+                  showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
+                  if (current.length > 3) {
+                    current.shift(); // remove the oldest
+                  }
+                }else{
+                  showToast(`❗${targetDivs.length - idx} Already bookmarked`);
                 }
-              }else{
-                showToast(`❗${targetDivs.length - idx} Already bookmarked`);
-              }
-            
-              bookmarks[url] = current;
-              localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-            }, doubleClickDuration);
+              
+                bookmarks[url] = current;
+                localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+              }, doubleClickDuration);
             });
             numberSpan.addEventListener("dblclick", (e) => {
-              clearTimeout(clickTimeout);
-              pinMessage("OK")
+              clearTimeout(clickTimeoutNumberSpan);
+              pinMessage((targetDivs.length - idx), targetDivs[idx].textContent.slice(0, pinnedMessageLimit));
             });
             div.prepend(numberSpan);
           });
@@ -270,7 +272,7 @@ setTimeout(() => {
             counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
         }
 
-        function scrollTo(index) {
+        function scrolltoItem(index) {
             targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
             currentIndex = index;
             updateCounter();
@@ -278,29 +280,29 @@ setTimeout(() => {
 
         upBtn.addEventListener("click", () => {
           clickTimeout = setTimeout(() => {
-            console.log("Checking Double Click"); 
+            console.log("Checking For Double Click"); 
             gotoNext();
           }, doubleClickDuration);
         });
         upBtn.addEventListener("dblclick", () => {
-          clickTimeout = setTimeout(() => {
-            console.log("Checking Double Click");
-            gotoFirst();
-          }, doubleClickDuration);
+          gotoFirst();
         });
         function gotoFirst(){
-          scrollTo(targetDivs.length - 1);
-          currentIndex= targetDivs.length - 1;
+          clickTimeout = setTimeout(() => {
+            console.log("Checking For Double Click");
+            scrolltoItem(targetDivs.length - 1);
+            currentIndex= targetDivs.length - 1;
+          }, doubleClickDuration);
         }
         function gotoNext(){
           if (currentIndex < targetDivs.length - 1) {
-            scrollTo(currentIndex + 1);
+            scrolltoItem(currentIndex + 1);
           }
         }
 
         downBtn.addEventListener("click", () => {
           clickTimeout = setTimeout(() => {
-            console.log("Checking Double Click");
+            console.log("Checking For Double Click");
             gotoPrev();
           }, doubleClickDuration);
         });
@@ -309,12 +311,12 @@ setTimeout(() => {
           gotoLast();
         });
         function gotoLast(){
-          scrollTo(0);
+          scrolltoItem(0);
           currentIndex= 0;
         }
         function gotoPrev(){
           if (currentIndex > 0) {
-            scrollTo(currentIndex - 1);
+            scrolltoItem(currentIndex - 1);
           }
         }
         // Toggle visibility of buttons and counter
@@ -344,53 +346,107 @@ setTimeout(() => {
           }
         }, 3000); // Check every 3 second
         
+        function showToast(message) {
+          const toast = document.createElement('div');
+          toast.innerText = message;
+          toast.style = `
+            position: fixed;
+            top: 2vh;
+            right: 2vw;
+            background-color: #00a6ed;
+            color: white;
+            padding: 10px 14px;
+            font-size: .9vw;
+            border-radius: 8px;
+            z-index: 9999;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+            transition: opacity 0.3s;
+          `;
+          document.body.appendChild(toast);
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+          }, 2000);
+        }
+    
+        function pinMessage(numberofMessage, message) {
+          // Remove any existing pinned message
+          const existing = document.querySelector('.pinned-message');
+          if (existing) {
+            existing.remove();
+          }
+        
+          // Create pinned message container
+          const pinedMessage = document.createElement('div');
+          pinedMessage.classList.add('pinned-message');
+          pinedMessage.style = `
+            position: fixed;
+            bottom: 7vh;
+            right: 2vw;
+            max-width: 20%;
+            background-color: #00a6ed;
+            color: white;
+            padding: 10px 14px;
+            font-size: .7vw;
+            border-radius: 8px;
+            z-index: 9999;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+            transition: opacity 0.3s;
+          `;
+        
+          // Add message text
+          const messageText = document.createElement('div');
+          messageText.innerText = `📌Pinned Message: ${message}...`;
+          pinedMessage.appendChild(messageText);
+        
+          // Create close button
+          const closeBtn = document.createElement('button');
+          closeBtn.innerText = 'Close';
+          closeBtn.style = `
+            margin-top: 10px;
+            background-color: white;
+            color: #00a6ed;
+            border: none;
+            padding: 5px 10px;
+            font-size: .7vw;
+            border-radius: 5px;
+            cursor: pointer;
+          `;
+          
+          // Close on click
+          closeBtn.addEventListener('click', () => {
+            pinedMessage.style.opacity = '0';
+            setTimeout(() => pinedMessage.remove(), 300);
+          });
+          
+          // Source button (e.g., "Action")
+          const sourceBtn = document.createElement('button');
+          sourceBtn.innerText = `Goto No. ${numberofMessage}`;
+          sourceBtn.style = `
+            background-color: white;
+            color: #00a6ed;
+            border: none;
+            padding: 5px 10px;
+            font-size: .7vw;
+            border-radius: 5px;
+            margin-left: 15px;
+            cursor: pointer;
+            flex: 1;
+          `;
+          sourceBtn.addEventListener('click', () => {
+            scrolltoItem((targetDivs.length - numberofMessage));
+            currentIndex= numberofMessage;
+          });
+    
+          // Append buttons to the message
+          pinedMessage.appendChild(closeBtn);
+          pinedMessage.appendChild(sourceBtn);
+          
+          // Add to document
+          document.body.appendChild(pinedMessage);      
+        }
     })();
 
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.innerText = message;
-      toast.style = `
-        position: fixed;
-        bottom: 5vh;
-        right: 2vw;
-        background-color: #00a6ed;
-        color: white;
-        padding: 10px 14px;
-        font-size: .9vw;
-        border-radius: 8px;
-        z-index: 9999;
-        box-shadow: 0 0 8px rgba(0,0,0,0.2);
-        transition: opacity 0.3s;
-      `;
-      document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 500);
-      }, 2000);
-    }
-
-    function pinMessage(message) {
-      const toast = document.createElement('div');
-      toast.innerText = message;
-      toast.style = `
-        position: fixed;
-        top: 5vh;
-        right: 2vw;
-        background-color: #00a6ed;
-        color: white;
-        padding: 10px 14px;
-        font-size: .9vw;
-        border-radius: 8px;
-        z-index: 9999;
-        box-shadow: 0 0 8px rgba(0,0,0,0.2);
-        transition: opacity 0.3s;
-      `;
-      document.body.appendChild(toast);
-      // setTimeout(() => {
-      //   toast.style.opacity = '0';
-      //   setTimeout(() => toast.remove(), 500);
-      // }, 2000);
-    }
     // document.addEventListener(
     //   "keyup",
     //   (event) => {
