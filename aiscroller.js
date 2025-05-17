@@ -30,7 +30,7 @@ function aiFun(){
   // Function to update the div list
   function updateDivs() {
       targetDivs = [];
-      if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/share/")) {
+      if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
         selector = "article.text-token-text-primary.w-full";
       } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
         selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
