@@ -55,6 +55,7 @@ setTimeout(() => {
             const url = window.location.href;
             const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
             const current = bookmarks[url] || [];
+            bookmarkViewer.innerHTML="";
             const bookmarkedNumbers = bookmarks[url] || [];
             bookmarkedNumbers.forEach(number => {
               const bookmarkBtn = document.createElement("button");
@@ -79,7 +80,6 @@ setTimeout(() => {
                 }
               });
               
-              bookmarkViewer.innerHTML="";
               bookmarkViewer.appendChild(bookmarkBtn);
             });
             numberSpan.style.display= localStorage.getItem('scrollerVisibility');
