@@ -1,5 +1,4 @@
 function urlCheck(){
-  console.log("Scroller script started.");
   const currentUrl = window.location.href;
   selector = '';
   const validUrls = [
@@ -26,6 +25,7 @@ function urlCheck(){
     console.log("Scroller script disabled: not a valid URL.");
     return;
   }else{
+    console.log("Scroller script started.");
     initializeVal();
     aiFun(currentUrl);
     const observer = new MutationObserver((mutationsList) => {
@@ -60,7 +60,6 @@ function initializeVal(){
   currentIndex = 0;
   initializeUi();
 }
-
 function initializeUi(){
   upBtn = document.createElement('button');
   downBtn = document.createElement('button');
@@ -223,7 +222,6 @@ function initializeUi(){
       updateCounter();
   }
 }
-urlCheck();
 function aiFun(currentUrl){
   console.log("Ji")
   // Function to update the div list
@@ -467,32 +465,9 @@ function aiFun(currentUrl){
 
 }
 
-let lastUrl = location.href;
-
-const onUrlChange = () => {
-  console.log("✅ URL changed to:");
-
-  const currentUrl = location.href;
-  if (currentUrl !== lastUrl) {
-    lastUrl = currentUrl;
-    console.log("✅ URL changed to:", currentUrl);
-    // Call your custom function here
-  }
-};
-
-// Patch pushState
-const originalPushState = history.pushState;
-history.pushState = function (...args) {
-  originalPushState.apply(this, args);
-  onUrlChange();
-};
-
-// Patch replaceState
-const originalReplaceState = history.replaceState;
-history.replaceState = function (...args) {
-  originalReplaceState.apply(this, args);
-  onUrlChange();
-};
-
-// Listen for back/forward navigation
-window.addEventListener('popstate', onUrlChange);
+urlCheck();
+window.navigation.addEventListener("navigate", (event) => {
+  setTimeout(() => {
+    urlCheck();
+  }, 1000);
+})
