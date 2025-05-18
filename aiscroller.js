@@ -1,11 +1,4 @@
-const doubleClickDuration= 400;
-const pinnedMessageLimit= 200;
-let clickTimeout;
-
-let currentIndex = 0;
-
-function aiFun(){
-
+function urlCheck(){
   console.log("Scroller script started.");
 
   const currentUrl = window.location.href;
@@ -22,8 +15,126 @@ function aiFun(){
   if (!validUrls.some(url => currentUrl.startsWith(url))) {
     console.log("Scroller script disabled: not a valid URL.");
     return;
+  }else{
+    setTimeout(() => {
+      initializeVal();
+      aiFun(currentUrl);
+    }, 5000); // Wait 5 seconds before running the script
   }
+}
+function initializeVal(){
+  doubleClickDuration= 400;
+  pinnedMessageLimit= 200;
+  let clickTimeout;
 
+  currentIndex = 0;
+  initializeUi();
+}
+
+function initializeUi(){
+  upBtn = document.createElement('button');
+  downBtn = document.createElement('button');
+  counter = document.createElement('div');
+  toggleBtn = document.createElement('button');
+  scrollerButtonDiv = document.createElement('div');
+  bookmarkViewer = document.createElement('div');
+  scrollerDiv = document.createElement('div');
+
+  // Scroll buttons
+  upBtn.innerText = "🢁";
+  upBtn.title = "Scroll Up";
+  upBtn.style.backgroundColor = "#00a6ed";
+  upBtn.style.border= "none";
+  upBtn.style.borderRadius= "10px 10px 0 0";
+  upBtn.style.textAlign = "center";
+  upBtn.style.fontSize = "1.2vw";
+  upBtn.style.width = "fit-content";
+  upBtn.style.minWidth = "2.6vw";
+  upBtn.style.height = "fit-content";
+  upBtn.style.padding = "5px";
+  upBtn.style.margin = "auto";
+
+  downBtn.innerText = "🢃";
+  downBtn.title = "Scroll Down";
+  downBtn.style.backgroundColor = "#00a6ed";
+  downBtn.style.border= "none";
+  downBtn.style.borderRadius= "0 0 10px 10px";
+  downBtn.style.textAlign = "center";
+  downBtn.style.fontSize = "1.2vw";
+  downBtn.style.width = "fit-content";
+  downBtn.style.minWidth = "2.6vw";
+  downBtn.style.height = "fit-content";
+  downBtn.style.padding = "5px";
+  downBtn.style.margin = "auto";
+
+  // Counter
+  counter.style = `
+  background-color: #111827;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: .7vw;
+  font-family: sans-serif;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  white-space: nowrap;`;
+
+  // Show/Hide button
+  toggleBtn.innerText = "AI Scroller";
+  toggleBtn.style = `
+  width: fit-content;
+  padding: 5px 8px;
+  background-color: #00a6ed;
+  color: white;
+  font-size: .6vw;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;`;
+  toggleBtn.title = "Show/Hide Buttons";
+
+  scrollerButtonDiv.style = `
+  height: fit-content;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;`;
+
+  bookmarkViewer.style = `
+  height: fit-content;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-top: 10px;
+  margin: auto;`;
+  scrollerButtonDiv.appendChild(upBtn);
+  scrollerButtonDiv.appendChild(counter);
+  scrollerButtonDiv.appendChild(downBtn);
+  scrollerButtonDiv.appendChild(bookmarkViewer);
+
+  scrollerDiv.style = `
+  position: fixed;
+  width: 4vw;
+  right: 2vw;
+  top: 15vh;
+  height: fit-content;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin: auto;`;
+
+  scrollerDiv.appendChild(toggleBtn);
+  scrollerDiv.appendChild(scrollerButtonDiv);
+
+  document.body.appendChild(scrollerDiv);
+}
+
+urlCheck();
+
+function aiFun(currentUrl){
   let targetDivs = [];
   let selector = '';
 
@@ -173,103 +284,6 @@ function aiFun(){
       updateCounter();
     }
       
-    // Scroll buttons
-    const upBtn = document.createElement('button');
-      upBtn.innerText = "🢁";
-      upBtn.title = "Scroll Up";
-      upBtn.style.backgroundColor = "#00a6ed";
-      upBtn.style.border= "none";
-      upBtn.style.borderRadius= "10px 10px 0 0";
-      upBtn.style.textAlign = "center";
-      upBtn.style.fontSize = "1.2vw";
-      upBtn.style.width = "fit-content";
-      upBtn.style.minWidth = "2.6vw";
-      upBtn.style.height = "fit-content";
-      upBtn.style.padding = "5px";
-      upBtn.style.margin = "auto";
-
-    const downBtn = document.createElement('button');
-      downBtn.innerText = "🢃";
-      downBtn.title = "Scroll Down";
-      downBtn.style.backgroundColor = "#00a6ed";
-      downBtn.style.border= "none";
-      downBtn.style.borderRadius= "0 0 10px 10px";
-      downBtn.style.textAlign = "center";
-      downBtn.style.fontSize = "1.2vw";
-      downBtn.style.width = "fit-content";
-      downBtn.style.minWidth = "2.6vw";
-      downBtn.style.height = "fit-content";
-      downBtn.style.padding = "5px";
-      downBtn.style.margin = "auto";
-    
-    // Counter
-    const counter = document.createElement('div');
-      counter.style = `
-      background-color: #111827;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-align: center;
-      font-size: .7vw;
-      font-family: sans-serif;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      white-space: nowrap;`;
-
-    // Show/Hide button
-    const toggleBtn = document.createElement('button');
-      toggleBtn.innerText = "AI Scroller";
-      toggleBtn.style = `
-      width: fit-content;
-      padding: 5px 8px;
-      background-color: #00a6ed;
-      color: white;
-      font-size: .6vw;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;`;
-      toggleBtn.title = "Show/Hide Buttons";
-    
-    const scrollerButtonDiv = document.createElement('div');
-      scrollerButtonDiv.style = `
-      height: fit-content;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;`;
-    const bookmarkViewer = document.createElement('div');
-    bookmarkViewer.style = `
-      height: fit-content;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      margin-top: 10px;
-      margin: auto;`;
-    scrollerButtonDiv.appendChild(upBtn);
-    scrollerButtonDiv.appendChild(counter);
-    scrollerButtonDiv.appendChild(downBtn);
-    scrollerButtonDiv.appendChild(bookmarkViewer);
-    
-    const scrollerDiv = document.createElement('div');
-      scrollerDiv.style = `
-      position: fixed;
-      width: 4vw;
-      right: 2vw;
-      top: 15vh;
-      height: fit-content;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      gap: 10px;
-      margin: auto;`;
-    
-    scrollerDiv.appendChild(toggleBtn);
-    scrollerDiv.appendChild(scrollerButtonDiv);
-    
-    document.body.appendChild(scrollerDiv);
-
     function updateCounter() {
         counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
     }
@@ -449,7 +463,3 @@ function aiFun(){
     }
 
 }
-
-setTimeout(() => {
-  aiFun();
-}, 5000); // Wait 5 seconds before running the script
