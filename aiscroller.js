@@ -330,7 +330,6 @@ function aiFun(currentUrl){
       
         // Get current list for this URL, or empty array
         const current = bookmarks[url] || [];
-        bookmarksGetter();
       
         if (!current.includes(targetDivs.length - idx)) {
           // Add the number, keeping only last 3
@@ -345,6 +344,8 @@ function aiFun(currentUrl){
       
         bookmarks[url] = current;
         localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+        bookmarksGetter();
+
       }, doubleClickDuration);
     });
     numberSpan.addEventListener("dblclick", (e) => {
