@@ -51,11 +51,9 @@ function urlCheck(){
     
   }
 }
-
 function initializeVal(){
   doubleClickDuration= 400;
   pinnedMessageLimit= 200;
-  let clickTimeout;
 
   currentIndex = 0;
   initializeUi();
@@ -141,6 +139,7 @@ function initializeUi(){
   scrollerButtonDiv.appendChild(downBtn);
   scrollerButtonDiv.appendChild(bookmarkViewer);
 
+  scrollerDiv.id= "scrollerDiv";
   scrollerDiv.style = `
   position: fixed;
   width: 4vw;
@@ -158,6 +157,7 @@ function initializeUi(){
   scrollerDiv.appendChild(toggleBtn);
   scrollerDiv.appendChild(scrollerButtonDiv);
 
+  if(document.getElementById("scrollerDiv")) document.getElementById("scrollerDiv").remove();
   document.body.appendChild(scrollerDiv);
   
 
@@ -204,12 +204,10 @@ function initializeUi(){
   }
   // Toggle visibility of buttons and counter
   toggleBtn.addEventListener("click", () => {
-    const isVisible = upBtn.style.display !== "none";
+    const isVisible = scrollerButtonDiv.style.display !== "none";
     const newDisplay = isVisible ? "none" : "block";
     localStorage.setItem('scrollerVisibility', newDisplay);
-    upBtn.style.display = newDisplay;
-    downBtn.style.display = newDisplay;
-    counter.style.display = newDisplay;
+    scrollerButtonDiv.style.display = newDisplay;
   });
 
   function updateCounter() {
@@ -221,11 +219,41 @@ function initializeUi(){
       currentIndex = index;
       updateCounter();
   }
+  bookmarksGetter();
+}
+function bookmarksGetter(){
+  const url = window.location.href;
+  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+  bookmarkViewer.innerHTML="";
+  const bookmarkedNumbers = bookmarks[url] || [];
+  bookmarkedNumbers.forEach(number => {
+    const bookmarkBtn = document.createElement("button");
+    bookmarkBtn.textContent = `No. ${number}`;
+    bookmarkBtn.style.width = "full";
+    bookmarkBtn.style.margin = "auto";
+    bookmarkBtn.style.marginTop = "5px";
+    bookmarkBtn.style.padding = "5px 10px";
+    bookmarkBtn.style.cursor = "pointer";
+    bookmarkBtn.style.backgroundColor = "#D8586D";
+    bookmarkBtn.style.color = "white";
+    bookmarkBtn.style.border = "none";
+    bookmarkBtn.style.borderRadius = "5px";
+    bookmarkBtn.style.fontSize = ".5vw";
+  
+    bookmarkBtn.addEventListener("click", () => {
+      const target = document.getElementById(`scroller-number-label${number}`);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        currentIndex = targetDivs.length-number;
+        counter.innerText = `${number} / ${targetDivs.length}`;
+      }
+    });
+    
+    bookmarkViewer.appendChild(bookmarkBtn);
+  });
 }
 function aiFun(currentUrl){
-  console.log("Ji")
   // Function to update the div list
-
   targetDivs = [...document.querySelectorAll(selector)].reverse();
 
   // Remove existing numbers
@@ -238,36 +266,7 @@ function aiFun(currentUrl){
     numberSpan.id = 'scroller-number-label'+(targetDivs.length - idx);
     numberSpan.innerText = `No. ${targetDivs.length - idx}`;
     
-    const url = window.location.href;
-    const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-    const current = bookmarks[url] || [];
-    bookmarkViewer.innerHTML="";
-    const bookmarkedNumbers = bookmarks[url] || [];
-    bookmarkedNumbers.forEach(number => {
-      const bookmarkBtn = document.createElement("button");
-      bookmarkBtn.textContent = `No. ${number}`;
-      bookmarkBtn.style.width = "full";
-      bookmarkBtn.style.margin = "auto";
-      bookmarkBtn.style.marginTop = "5px";
-      bookmarkBtn.style.padding = "5px 10px";
-      bookmarkBtn.style.cursor = "pointer";
-      bookmarkBtn.style.backgroundColor = "#D8586D";
-      bookmarkBtn.style.color = "white";
-      bookmarkBtn.style.border = "none";
-      bookmarkBtn.style.borderRadius = "5px";
-      bookmarkBtn.style.fontSize = ".5vw";
-    
-      bookmarkBtn.addEventListener("click", () => {
-        const target = document.getElementById(`scroller-number-label${number}`);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-          currentIndex = targetDivs.length-number;
-          counter.innerText = `${number} / ${targetDivs.length}`;
-        }
-      });
-      
-      bookmarkViewer.appendChild(bookmarkBtn);
-    });
+
     numberSpan.style.display= localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
       cursor: pointer;
@@ -310,6 +309,9 @@ function aiFun(currentUrl){
       float: right;`;
     }
 
+    const url = window.location.href;
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+    const current = bookmarks[url] || [];
     // If already bookmarked, set orange background
     if (current.includes(targetDivs.length - idx)) {
       numberSpan.style.backgroundColor = "#D8586D";
@@ -328,6 +330,7 @@ function aiFun(currentUrl){
       
         // Get current list for this URL, or empty array
         const current = bookmarks[url] || [];
+        bookmarksGetter();
       
         if (!current.includes(targetDivs.length - idx)) {
           // Add the number, keeping only last 3
