@@ -122,7 +122,7 @@ function initializeUi(){
   scrollerButtonDiv.style = `
   height: fit-content;
   z-index: 9999;
-  display: flex;
+  display: ${localStorage.getItem("scrollerVisibility")};
   flex-direction: column;
   flex-wrap: nowrap;`;
 
@@ -157,7 +157,9 @@ function initializeUi(){
   scrollerDiv.appendChild(toggleBtn);
   scrollerDiv.appendChild(scrollerButtonDiv);
 
-  if(document.getElementById("scrollerDiv")) document.getElementById("scrollerDiv").remove();
+  if(document.getElementById("scrollerDiv")){
+    document.getElementById("scrollerDiv").remove();
+  }
   document.body.appendChild(scrollerDiv);
   
 
