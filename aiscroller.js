@@ -205,7 +205,7 @@ function initializeUi(){
   // Toggle visibility of buttons and counter
   toggleBtn.addEventListener("click", () => {
     const isVisible = scrollerButtonDiv.style.display !== "none";
-    const newDisplay = isVisible ? "none" : "block";
+    const newDisplay = isVisible ? "none" : "flex";
     localStorage.setItem('scrollerVisibility', newDisplay);
     scrollerButtonDiv.style.display = newDisplay;
   });
