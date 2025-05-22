@@ -11,7 +11,7 @@
 - **Bookmark messages for quick reference (stored separately for each chat page)**
 - Runs only on supported AI chat Websites
 - Pin a message by double-clicking its message number
-- Jump instantly to the first or last message by double-clicking the up or down scroll buttons
+- Jump instantly to the first or last message
 
 
 ### 🧠 Supported Platforms
