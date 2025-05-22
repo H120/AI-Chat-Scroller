@@ -76,7 +76,7 @@ function initializeUi(){
   firstBtn.style.textAlign = "center";
   firstBtn.style.fontSize = "0.6vw";
   firstBtn.style.width = "fit-content";
-  firstBtn.style.minWidth = "2vw";
+  firstBtn.style.minWidth = "1.8vw";
   firstBtn.style.height = "fit-content";
   firstBtn.style.padding = "3px";
   firstBtn.style.margin = "auto";
@@ -93,7 +93,7 @@ function initializeUi(){
   lastBtn.style.textAlign = "center";
   lastBtn.style.fontSize = "0.6vw";
   lastBtn.style.width = "fit-content";
-  lastBtn.style.minWidth = "2vw";
+  lastBtn.style.minWidth = "1.8vw";
   lastBtn.style.height = "fit-content";
   lastBtn.style.padding = "3px";
   lastBtn.style.margin = "auto";
