@@ -52,9 +52,7 @@ function urlCheck(){
   }
 }
 function initializeVal(){
-  doubleClickDuration= 400;
   pinnedMessageLimit= 200;
-
   currentIndex = 0;
   initializeUi();
 }
@@ -66,13 +64,49 @@ function initializeUi(){
   scrollerButtonDiv = document.createElement('div');
   bookmarkViewer = document.createElement('div');
   scrollerDiv = document.createElement('div');
+  firstBtn = document.createElement('button');
+  lastBtn = document.createElement('button');
+
+  // Go to First button
+  firstBtn.innerText = "🢁🢁";
+  firstBtn.title = "Go to First";
+  firstBtn.style.backgroundColor = "#00a6ed";
+  firstBtn.style.border = "none";
+  firstBtn.style.borderRadius = "10px 10px 0 0";
+  firstBtn.style.textAlign = "center";
+  firstBtn.style.fontSize = "0.6vw";
+  firstBtn.style.width = "fit-content";
+  firstBtn.style.minWidth = "2vw";
+  firstBtn.style.height = "fit-content";
+  firstBtn.style.padding = "3px";
+  firstBtn.style.margin = "auto";
+  firstBtn.style.visibility = "hidden";
+  firstBtn.style.opacity = "0";
+  firstBtn.style.transition = "opacity 0.3s ease";
+
+  // Go to Last button
+  lastBtn.innerText = "🢃🢃";
+  lastBtn.title = "Go to Last";
+  lastBtn.style.backgroundColor = "#00a6ed";
+  lastBtn.style.border = "none";
+  lastBtn.style.borderRadius = "0 0 10px 10px";
+  lastBtn.style.textAlign = "center";
+  lastBtn.style.fontSize = "0.6vw";
+  lastBtn.style.width = "fit-content";
+  lastBtn.style.minWidth = "2vw";
+  lastBtn.style.height = "fit-content";
+  lastBtn.style.padding = "3px";
+  lastBtn.style.margin = "auto";
+  lastBtn.style.visibility = "hidden";
+  lastBtn.style.opacity = "0";
+  lastBtn.style.transition = "opacity 0.3s ease";
 
   // Scroll buttons
   upBtn.innerText = "🢁";
   upBtn.title = "Scroll Up";
   upBtn.style.backgroundColor = "#00a6ed";
-  upBtn.style.border= "none";
-  upBtn.style.borderRadius= "10px 10px 0 0";
+  upBtn.style.border = "none";
+  upBtn.style.borderRadius = "10px 10px 0 0";
   upBtn.style.textAlign = "center";
   upBtn.style.fontSize = "1.2vw";
   upBtn.style.width = "fit-content";
@@ -84,8 +118,8 @@ function initializeUi(){
   downBtn.innerText = "🢃";
   downBtn.title = "Scroll Down";
   downBtn.style.backgroundColor = "#00a6ed";
-  downBtn.style.border= "none";
-  downBtn.style.borderRadius= "0 0 10px 10px";
+  downBtn.style.border = "none";
+  downBtn.style.borderRadius = "0 0 10px 10px";
   downBtn.style.textAlign = "center";
   downBtn.style.fontSize = "1.2vw";
   downBtn.style.width = "fit-content";
@@ -99,12 +133,14 @@ function initializeUi(){
   background-color: #111827;
   color: white;
   padding: 6px 12px;
+  min-width: 70px;
   border-radius: 6px;
   text-align: center;
   font-size: .7vw;
   font-family: sans-serif;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  white-space: nowrap;`;
+  white-space: nowrap;
+  margin: auto;`;
 
   // Show/Hide button
   toggleBtn.innerText = "AI Scroller";
@@ -116,15 +152,19 @@ function initializeUi(){
   font-size: .6vw;
   border: none;
   border-radius: 8px;
-  cursor: pointer;`;
+  cursor: pointer;
+  margin: auto;`;
   toggleBtn.title = "Show/Hide Buttons";
 
   scrollerButtonDiv.style = `
   height: fit-content;
   z-index: 9999;
   display: ${localStorage.getItem("scrollerVisibility")};
+  display: flex;
   flex-direction: column;
-  flex-wrap: nowrap;`;
+  flex-wrap: nowrap;
+  position: relative;
+  margin: auto;`;
 
   bookmarkViewer.style = `
   height: fit-content;
@@ -132,14 +172,18 @@ function initializeUi(){
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin-top: 10px;
-  margin: auto;`;
+  margin: auto;
+  margin-top: 20px;`;
+
+  // Append buttons in the desired order
+  scrollerButtonDiv.appendChild(firstBtn);
   scrollerButtonDiv.appendChild(upBtn);
   scrollerButtonDiv.appendChild(counter);
   scrollerButtonDiv.appendChild(downBtn);
+  scrollerButtonDiv.appendChild(lastBtn);
   scrollerButtonDiv.appendChild(bookmarkViewer);
 
-  scrollerDiv.id= "scrollerDiv";
+  scrollerDiv.id = "scrollerDiv";
   scrollerDiv.style = `
   position: fixed;
   width: 4vw;
@@ -151,53 +195,59 @@ function initializeUi(){
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: space-between;
-  gap: 10px;
+  gap: 25px;
   margin: auto;`;
 
   scrollerDiv.appendChild(toggleBtn);
   scrollerDiv.appendChild(scrollerButtonDiv);
 
-  if(document.getElementById("scrollerDiv")){
+  if(document.getElementById("scrollerDiv"))
     document.getElementById("scrollerDiv").remove();
-  }
-  document.body.appendChild(scrollerDiv);
-  
 
-  upBtn.addEventListener("click", () => {
-    clickTimeout = setTimeout(() => {
-      console.log("Checking For Double Click"); 
-      gotoNext();
-    }, doubleClickDuration);
+  document.body.appendChild(scrollerDiv);
+
+  // Add hover events to show/hide first and last buttons with animation
+  scrollerButtonDiv.addEventListener("mouseenter", () => {
+    firstBtn.style.visibility = "visible";
+    lastBtn.style.visibility = "visible";
+    setTimeout(() => {
+      firstBtn.style.opacity = "1";
+      lastBtn.style.opacity = "1";
+    }, 10);
   });
-  upBtn.addEventListener("dblclick", () => {
+  scrollerButtonDiv.addEventListener("mouseleave", () => {
+    firstBtn.style.opacity = "0";
+    lastBtn.style.opacity = "0";
+    setTimeout(() => {
+      firstBtn.style.visibility = "hidden";
+      lastBtn.style.visibility = "hidden";
+    }, 300);
+  });
+
+  firstBtn.addEventListener("click", () => {
     gotoFirst();
   });
+  lastBtn.addEventListener("click", () => {
+    gotoLast();
+  });
+  upBtn.addEventListener("click", () => {
+    gotoNext();
+  });
+  downBtn.addEventListener("click", () => {
+    gotoPrev();
+  });
   function gotoFirst(){
-    clickTimeout = setTimeout(() => {
-      console.log("Checking For Double Click");
-      scrolltoItem(targetDivs.length - 1);
-      currentIndex= targetDivs.length - 1;
-    }, doubleClickDuration);
+    scrolltoItem(targetDivs.length - 1);
+    currentIndex = targetDivs.length - 1;
+  }
+  function gotoLast(){
+    scrolltoItem(0);
+    currentIndex = 0;
   }
   function gotoNext(){
     if (currentIndex < targetDivs.length - 1) {
       scrolltoItem(currentIndex + 1);
     }
-  }
-
-  downBtn.addEventListener("click", () => {
-    clickTimeout = setTimeout(() => {
-      console.log("Checking For Double Click");
-      gotoPrev();
-    }, doubleClickDuration);
-  });
-  downBtn.addEventListener("dblclick", () => {
-    clearTimeout(clickTimeout);
-    gotoLast();
-  });
-  function gotoLast(){
-    scrolltoItem(0);
-    currentIndex= 0;
   }
   function gotoPrev(){
     if (currentIndex > 0) {
@@ -210,6 +260,15 @@ function initializeUi(){
     const newDisplay = isVisible ? "none" : "flex";
     localStorage.setItem('scrollerVisibility', newDisplay);
     scrollerButtonDiv.style.display = newDisplay;
+    // Ensure first and last buttons are hidden when toggling visibility
+    if (newDisplay === "none") {
+      firstBtn.style.visibility = "hidden";
+      lastBtn.style.visibility = "hidden";
+      firstBtn.style.opacity = "0";
+      lastBtn.style.opacity = "0";
+      firstBtn.style.transform = "translateX(-50%) scale(0.8)";
+      lastBtn.style.transform = "translateX(-50%) scale(0.8)";
+    }
   });
 
   function updateCounter() {
@@ -226,7 +285,7 @@ function initializeUi(){
 function bookmarksGetter(){
   const url = window.location.href;
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-  bookmarkViewer.innerHTML="";
+  bookmarkViewer.innerHTML = "";
   const bookmarkedNumbers = bookmarks[url] || [];
   bookmarkedNumbers.forEach(number => {
     const bookmarkBtn = document.createElement("button");
@@ -246,7 +305,7 @@ function bookmarksGetter(){
       const target = document.getElementById(`scroller-number-label${number}`);
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-        currentIndex = targetDivs.length-number;
+        currentIndex = targetDivs.length - number;
         counter.innerText = `${number} / ${targetDivs.length}`;
       }
     });
@@ -254,6 +313,7 @@ function bookmarksGetter(){
     bookmarkViewer.appendChild(bookmarkBtn);
   });
 }
+
 function aiFun(currentUrl){
   // Function to update the div list
   targetDivs = [...document.querySelectorAll(selector)].reverse();
@@ -265,11 +325,10 @@ function aiFun(currentUrl){
   targetDivs.forEach((div, idx) => {
     const numberSpan = document.createElement('span');
     numberSpan.className = 'scroller-number-label';
-    numberSpan.id = 'scroller-number-label'+(targetDivs.length - idx);
+    numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
     numberSpan.innerText = `No. ${targetDivs.length - idx}`;
     
-
-    numberSpan.style.display= localStorage.getItem('scrollerVisibility');
+    numberSpan.style.display = localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
       cursor: pointer;
       user-select: none;
@@ -296,7 +355,7 @@ function aiFun(currentUrl){
       border-radius: 6px;
       z-index: 10;
       float: left;`;
-    }else if(currentUrl.startsWith("https://claude.ai/chat/")){
+    } else if(currentUrl.startsWith("https://claude.ai/chat/")) {
       numberSpan.style = `
       cursor: pointer;
       position: sticky;
@@ -320,38 +379,31 @@ function aiFun(currentUrl){
     }
     // ✅ Add click listener only to the label
     numberSpan.addEventListener("click", (e) => {
-      clickTimeoutNumberSpan = setTimeout(() => {
-        console.log("Checking For Double Click");
-
-        numberSpan.style.backgroundColor = "#D8586D";
-
-        e.stopPropagation(); // prevent bubbling
-      
-        const url = window.location.href;
-        let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-      
-        // Get current list for this URL, or empty array
-        const current = bookmarks[url] || [];
-      
-        if (!current.includes(targetDivs.length - idx)) {
-          // Add the number, keeping only last 3
-          current.push(targetDivs.length - idx);
-          showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
-          if (current.length > 3) {
-            current.shift(); // remove the oldest
-          }
-        }else{
-          showToast(`❗${targetDivs.length - idx} Already bookmarked`);
+      numberSpan.style.backgroundColor = "#D8586D";
+      e.stopPropagation(); // prevent bubbling
+    
+      const url = window.location.href;
+      let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+    
+      // Get current list for this URL, or empty array
+      const current = bookmarks[url] || [];
+    
+      if (!current.includes(targetDivs.length - idx)) {
+        // Add the number, keeping only last 3
+        current.push(targetDivs.length - idx);
+        showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
+        if (current.length > 3) {
+          current.shift(); // remove the oldest
         }
-      
-        bookmarks[url] = current;
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-        bookmarksGetter();
-
-      }, doubleClickDuration);
+      } else {
+        showToast(`❗${targetDivs.length - idx} Already bookmarked`);
+      }
+    
+      bookmarks[url] = current;
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+      bookmarksGetter();
     });
     numberSpan.addEventListener("dblclick", (e) => {
-      clearTimeout(clickTimeoutNumberSpan);
       pinMessage((targetDivs.length - idx), targetDivs[idx].textContent.slice(0, pinnedMessageLimit));
     });
     div.prepend(numberSpan);
@@ -458,7 +510,7 @@ function aiFun(currentUrl){
       `;
       sourceBtn.addEventListener('click', () => {
         scrolltoItem((targetDivs.length - numberofMessage));
-        currentIndex= numberofMessage;
+        currentIndex = numberofMessage;
       });
 
       // Append buttons to the message
@@ -476,4 +528,6 @@ window.navigation.addEventListener("navigate", (event) => {
   setTimeout(() => {
     urlCheck();
   }, 1000);
-})
+});
+
+console.log(selector)
