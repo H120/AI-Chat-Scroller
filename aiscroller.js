@@ -40,6 +40,16 @@ function urlCheck(){
               aiFun(currentUrl);
             }
           });
+          mutation.removedNodes.forEach((node) => {
+            console.log("OOOOoOoOooo")
+            if (
+              node.nodeType === Node.ELEMENT_NODE &&
+              node.matches &&
+              node.matches(selector)
+            ) {
+              aiFun(currentUrl);
+            }
+          });
         }
       }
     });
@@ -160,7 +170,6 @@ function initializeUi(){
   height: fit-content;
   z-index: 9999;
   display: ${localStorage.getItem("scrollerVisibility")};
-  display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   position: relative;
@@ -260,15 +269,6 @@ function initializeUi(){
     const newDisplay = isVisible ? "none" : "flex";
     localStorage.setItem('scrollerVisibility', newDisplay);
     scrollerButtonDiv.style.display = newDisplay;
-    // Ensure first and last buttons are hidden when toggling visibility
-    if (newDisplay === "none") {
-      firstBtn.style.visibility = "hidden";
-      lastBtn.style.visibility = "hidden";
-      firstBtn.style.opacity = "0";
-      lastBtn.style.opacity = "0";
-      firstBtn.style.transform = "translateX(-50%) scale(0.8)";
-      lastBtn.style.transform = "translateX(-50%) scale(0.8)";
-    }
   });
 
   function updateCounter() {
@@ -326,7 +326,7 @@ function aiFun(currentUrl){
     const numberSpan = document.createElement('span');
     numberSpan.className = 'scroller-number-label';
     numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
-    numberSpan.innerText = `No. ${targetDivs.length - idx}`;
+    numberSpan.innerText = `No. ${targetDivs.length - idx} `;
     
     numberSpan.style.display = localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
