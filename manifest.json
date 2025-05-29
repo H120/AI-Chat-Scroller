@@ -1,20 +1,21 @@
 {
-    "manifest_version": 3,
-    "name": "AI Chat Scroller",
-    "version": "1.0",
-    "description": "Scroll between divs with a specific class using Up and Down buttons.",
-    "permissions": ["scripting", "activeTab"],
-    "icons": {
-      "128": "icon128.png"
-    },
-    "action": {
-      "default_title": "AI Chat Scroller"
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["aiscroller.js"]
-      }
-    ]
-  }
+  "manifest_version": 3,
+  "name": "AI Chat Scroller",
+  "version": "1.0",
+  "description": "Scroll between divs with a specific class using Up and Down buttons.",
+  "permissions": ["scripting", "activeTab", "storage"],
+  "icons": {
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_title": "AI Chat Scroller",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["aiscroller.js"]
+    }
+  ]
+}
   

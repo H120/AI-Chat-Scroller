@@ -1,64 +1,70 @@
+aiscroller_enabled= null;
+
 function urlCheck(){
-  const currentUrl = window.location.href;
-  selector = '';
-  const validUrls = [
-    "https://chatgpt.com/",
-    "chatgpt.com/",
-    "https://grok.com/chat/",
-    "grok.com/chat/",
-    "https://claude.ai/chat/",
-    "claude.ai/chat/",
-    "https://copilot.microsoft.com/chats/",
-    "copilot.microsoft.com/chats/"
-  ];
-  targetDivs = [];
-  if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
-    selector = "article.text-token-text-primary.w-full";
-  } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
-    selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
-  } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
-    selector = "div[data-test-render-count]";
-  } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
-    selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
-  }
-  if (!validUrls.some(url => currentUrl.startsWith(url))) {
-    console.log("Scroller script disabled: not a valid URL.");
-    return;
-  }else{
-    console.log("Scroller script started.");
-    initializeVal();
-    aiFun(currentUrl);
-    const observer = new MutationObserver((mutationsList) => {
-      for (const mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            if (
-              node.nodeType === Node.ELEMENT_NODE &&
-              node.matches &&
-              node.matches(selector)
-            ) {
-              aiFun(currentUrl);
-            }
-          });
-          mutation.removedNodes.forEach((node) => {
-            console.log("OOOOoOoOooo")
-            if (
-              node.nodeType === Node.ELEMENT_NODE &&
-              node.matches &&
-              node.matches(selector)
-            ) {
-              aiFun(currentUrl);
-            }
-          });
+  console.log(aiscroller_enabled)
+  if(aiscroller_enabled){
+    console.log("Scroller script disabled: aiscroller_enabled is true.");
+
+    const currentUrl = window.location.href;
+    selector = '';
+    const validUrls = [
+      "https://chatgpt.com/",
+      "chatgpt.com/",
+      "https://grok.com/chat/",
+      "grok.com/chat/",
+      "https://claude.ai/chat/",
+      "claude.ai/chat/",
+      "https://copilot.microsoft.com/chats/",
+      "copilot.microsoft.com/chats/"
+    ];
+    targetDivs = [];
+    if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
+      selector = "article.text-token-text-primary.w-full";
+    } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
+      selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
+    } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
+      selector = "div[data-test-render-count]";
+    } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
+      selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+    }
+    if (!validUrls.some(url => currentUrl.startsWith(url))) {
+      console.log("Scroller script disabled: not a valid URL.");
+      return;
+    }else{
+      console.log("Scroller script started.");
+      initializeVal();
+      aiFun(currentUrl);
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.matches &&
+                node.matches(selector)
+              ) {
+                aiFun(currentUrl);
+              }
+            });
+            mutation.removedNodes.forEach((node) => {
+              if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.matches &&
+                node.matches(selector)
+              ) {
+                aiFun(currentUrl);
+              }
+            });
+          }
         }
-      }
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-    
+      });
+      
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+      
+    }
   }
 }
 function initializeVal(){
@@ -523,11 +529,25 @@ function aiFun(currentUrl){
 
 }
 
-urlCheck();
-window.navigation.addEventListener("navigate", (event) => {
-  setTimeout(() => {
+// Check if extension is enabled
+chrome.storage.local.get('aiscroller_enabled', function(result) {
+  if (result.aiscroller_enabled === undefined) {
+    chrome.storage.local.set({ aiscroller_enabled: 'true' });
+  }
+  console.log(result.aiscroller_enabled)
+  if (result.aiscroller_enabled == false) {
+    aiscroller_enabled= false;
+    console.log(result.aiscroller_enabled)
+    console.log('AI Scroller extension is disabled.');
+    return;
+  }else{
+    aiscroller_enabled= true;
     urlCheck();
-  }, 1000);
+    window.navigation.addEventListener("navigate", (event) => {
+      setTimeout(() => {
+        urlCheck();
+      }, 1000);
+    });
+  }
 });
 
-console.log(selector)
