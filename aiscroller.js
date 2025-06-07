@@ -1,3 +1,4 @@
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 aiscroller_enabled= null;
 
 function urlCheck(){
@@ -175,7 +176,9 @@ function initializeUi(){
   scrollerButtonDiv.style = `
   height: fit-content;
   z-index: 9999;
-  display: ${localStorage.getItem("scrollerVisibility")};
+  display: ${browserAPI.storage.local.get('scrollerVisibility', (result) => {
+    scrollerButtonDiv.style.display = result.scrollerVisibility || 'flex';
+  })};
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -274,7 +277,7 @@ function initializeUi(){
   toggleBtn.addEventListener("click", () => {
     const isVisible = scrollerButtonDiv.style.display !== "none";
     const newDisplay = isVisible ? "none" : "flex";
-    localStorage.setItem('scrollerVisibility', newDisplay);
+    browserAPI.storage.local.set({ scrollerVisibility: newDisplay });
     scrollerButtonDiv.style.display = newDisplay;
   });
 
@@ -531,9 +534,9 @@ function aiFun(currentUrl){
 }
 
 // Check if extension is enabled
-chrome.storage.local.get('aiscroller_enabled', function(result) {
+browserAPI.storage.local.get('aiscroller_enabled', function(result) {
   if (result.aiscroller_enabled === undefined) {
-    chrome.storage.local.set({ aiscroller_enabled: 'true' });
+    browserAPI.storage.local.set({ aiscroller_enabled: 'true' });
   }
   console.log(result.aiscroller_enabled)
   if (result.aiscroller_enabled == false) {
@@ -544,11 +547,8 @@ chrome.storage.local.get('aiscroller_enabled', function(result) {
   }else{
     aiscroller_enabled= true;
     urlCheck();
-    window.navigation.addEventListener("navigate", (event) => {
-      setTimeout(() => {
-        urlCheck();
-      }, 1000);
-    });
+    window.addEventListener('popstate', () => setTimeout(urlCheck, 1000));
+    window.addEventListener('hashchange', () => setTimeout(urlCheck, 1000));
   }
 });
 

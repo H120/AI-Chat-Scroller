@@ -1,0 +1,48 @@
+body {
+    font-family: sans-serif;
+    padding: 10px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    color: #00a6ed;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  #divButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  #enableButton {
+    background-color: #00a6ed;
+    color: white;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 10px 30px;
+    cursor: pointer;
+  }
+  
+  #enableButton:hover {
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+  }
+  
+  #githubButton {
+    width: 30px;
+    height: 30px;
+  }
+  
+  #donateButton {
+    width: 30px;
+    height: 30px;
+    color: #00a6ed;
+  }

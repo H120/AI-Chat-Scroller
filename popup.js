@@ -1,37 +1,43 @@
-if(localStorage.getItem('aiscroller_enabled')==null){
-    enabled = localStorage.setItem('aiscroller_enabled', 'true');
-}
-document.addEventListener('DOMContentLoaded', function() {
-  enableButton = document.getElementById('enableButton');
-  donateButton = document.getElementById('donateButton');
+document.addEventListener('DOMContentLoaded', function () {
+  const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+  const enableButton = document.getElementById('enableButton');
+  const donateButton = document.getElementById('donateButton');
 
-// Update button label based on stored value
-function updateBtn() {
-  chrome.storage.local.get('aiscroller_enabled', function (result) {
-    const enabled = result.aiscroller_enabled !== false;
-    enableButton.textContent = enabled ? 'Extension Enabled' : 'Extension Disabled';
-    enableButton.style.backgroundColor = enabled? '#00a6ed' : '#dc3545';
+  // Initialize state if not set
+  browserAPI.storage.local.get('aiscroller_enabled', function (result) {
+    if (result.aiscroller_enabled === undefined) {
+      browserAPI.storage.local.set({ aiscroller_enabled: true });
+    }
   });
-}
 
-// Handle button click
-enableButton.addEventListener('click', () => {
-  chrome.storage.local.get('aiscroller_enabled', function (result) {
-    const currentlyEnabled = result.aiscroller_enabled !== false;
-    const newState = !currentlyEnabled;
-      // Reload the current tab
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.reload(tabs[0].id);
+  // Update button label and style
+  function updateBtn() {
+    browserAPI.storage.local.get('aiscroller_enabled', function (result) {
+      const enabled = result.aiscroller_enabled !== false;
+      enableButton.textContent = enabled ? 'Disable Extension' : 'Enable Extension';
+      enableButton.style.backgroundColor = enabled ? '#00a6ed' : '#dc3545';
+    });
+  }
+
+  // Handle button click
+  enableButton.addEventListener('click', () => {
+    browserAPI.storage.local.get('aiscroller_enabled', function (result) {
+      const newState = !result.aiscroller_enabled;
+      browserAPI.storage.local.set({ aiscroller_enabled: newState }, function () {
+        updateBtn();
+        // Reload the current tab
+        browserAPI.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          browserAPI.tabs.reload(tabs[0].id);
+        });
       });
-      chrome.storage.local.set({ aiscroller_enabled: newState }, function () {
-      updateBtn(); // update the button label
     });
   });
-});
 
-// Initial load
-updateBtn();
-donateButton.addEventListener('click', () => {
-  alert('Thank you, but just send me an email! :]');
-});
+  // Handle donate button click
+  donateButton.addEventListener('click', () => {
+    alert('Thank you! Please send an email to h120com@gmail.com for donation details.');
+  });
+
+  // Initial load
+  updateBtn();
 });
