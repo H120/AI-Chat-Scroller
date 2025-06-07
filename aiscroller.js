@@ -1,22 +1,19 @@
-const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
-aiscroller_enabled= null;
+aiscroller_enabled = null;
 
-function urlCheck(){
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+
+function urlCheck() {
   console.log(aiscroller_enabled)
-  if(aiscroller_enabled){
+  if (aiscroller_enabled) {
     console.log("Scroller script disabled: aiscroller_enabled is true.");
 
     const currentUrl = window.location.href;
     selector = '';
     const validUrls = [
       "https://chatgpt.com/",
-      "chatgpt.com/",
       "https://grok.com/chat/",
-      "grok.com/chat/",
       "https://claude.ai/chat/",
-      "claude.ai/chat/",
-      "https://copilot.microsoft.com/chats/",
-      "copilot.microsoft.com/chats/"
+      "https://copilot.microsoft.com/chats/"
     ];
     targetDivs = [];
     if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
@@ -26,12 +23,12 @@ function urlCheck(){
     } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
       selector = "div[data-test-render-count]";
     } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
-      selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+      selector = 'div[data-tabster="{"groupper":{"tabbability":2},"focusable":{}}"], div[data-tabster]';
     }
     if (!validUrls.some(url => currentUrl.startsWith(url))) {
       console.log("Scroller script disabled: not a valid URL.");
       return;
-    }else{
+    } else {
       console.log("Scroller script started.");
       initializeVal();
       aiFun(currentUrl);
@@ -59,21 +56,22 @@ function urlCheck(){
           }
         }
       });
-      
+
       observer.observe(document.body, {
         childList: true,
         subtree: true,
       });
-      
     }
   }
 }
-function initializeVal(){
-  pinnedMessageLimit= 200;
+
+function initializeVal() {
+  pinnedMessageLimit = 200;
   currentIndex = 0;
   initializeUi();
 }
-function initializeUi(){
+
+function initializeUi() {
   upBtn = document.createElement('button');
   downBtn = document.createElement('button');
   counter = document.createElement('div');
@@ -173,17 +171,9 @@ function initializeUi(){
   margin: auto;`;
   toggleBtn.title = "Show/Hide Buttons";
 
-  scrollerButtonDiv.style = `
-  height: fit-content;
-  z-index: 9999;
-  display: ${browserAPI.storage.local.get('scrollerVisibility', (result) => {
+  browserAPI.storage.local.get('scrollerVisibility', (result) => {
     scrollerButtonDiv.style.display = result.scrollerVisibility || 'flex';
-  })};
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  position: relative;
-  margin: auto;`;
+  });
 
   bookmarkViewer.style = `
   height: fit-content;
@@ -220,7 +210,7 @@ function initializeUi(){
   scrollerDiv.appendChild(toggleBtn);
   scrollerDiv.appendChild(scrollerButtonDiv);
 
-  if(document.getElementById("scrollerDiv"))
+  if (document.getElementById("scrollerDiv"))
     document.getElementById("scrollerDiv").remove();
 
   document.body.appendChild(scrollerDiv);
@@ -255,24 +245,29 @@ function initializeUi(){
   downBtn.addEventListener("click", () => {
     gotoPrev();
   });
-  function gotoFirst(){
-    scrolltoItem(targetDivs.length - 1);
-    currentIndex = targetDivs.length - 1;
-  }
-  function gotoLast(){
+
+  function gotoFirst() {
     scrolltoItem(0);
     currentIndex = 0;
   }
-  function gotoNext(){
+
+  function gotoLast() {
+    scrolltoItem(targetDivs.length - 1);
+    currentIndex = targetDivs.length - 1;
+  }
+
+  function gotoNext() {
     if (currentIndex < targetDivs.length - 1) {
       scrolltoItem(currentIndex + 1);
     }
   }
-  function gotoPrev(){
+
+  function gotoPrev() {
     if (currentIndex > 0) {
       scrolltoItem(currentIndex - 1);
     }
   }
+
   // Toggle visibility of buttons and counter
   toggleBtn.addEventListener("click", () => {
     const isVisible = scrollerButtonDiv.style.display !== "none";
@@ -286,45 +281,49 @@ function initializeUi(){
   }
 
   function scrolltoItem(index) {
-      targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
-      currentIndex = index;
-      updateCounter();
+    targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
+    currentIndex = index;
+    updateCounter();
   }
+
   bookmarksGetter();
 }
-function bookmarksGetter(){
+
+function bookmarksGetter() {
   const url = window.location.href;
-  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-  bookmarkViewer.innerHTML = "";
-  const bookmarkedNumbers = bookmarks[url] || [];
-  bookmarkedNumbers.forEach(number => {
-    const bookmarkBtn = document.createElement("button");
-    bookmarkBtn.textContent = `No. ${number}`;
-    bookmarkBtn.style.width = "full";
-    bookmarkBtn.style.margin = "auto";
-    bookmarkBtn.style.marginTop = "5px";
-    bookmarkBtn.style.padding = "5px 10px";
-    bookmarkBtn.style.cursor = "pointer";
-    bookmarkBtn.style.backgroundColor = "#D8586D";
-    bookmarkBtn.style.color = "white";
-    bookmarkBtn.style.border = "none";
-    bookmarkBtn.style.borderRadius = "5px";
-    bookmarkBtn.style.fontSize = ".5vw";
-  
-    bookmarkBtn.addEventListener("click", () => {
-      const target = document.getElementById(`scroller-number-label${number}`);
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        currentIndex = targetDivs.length - number;
-        counter.innerText = `${number} / ${targetDivs.length}`;
-      }
+  browserAPI.storage.local.get('bookmarks', (result) => {
+    let bookmarks = result.bookmarks || {};
+    bookmarkViewer.innerHTML = "";
+    const bookmarkedNumbers = bookmarks[url] || [];
+    bookmarkedNumbers.forEach(number => {
+      const bookmarkBtn = document.createElement("button");
+      bookmarkBtn.textContent = `No. ${number}`;
+      bookmarkBtn.style.width = "full";
+      bookmarkBtn.style.margin = "auto";
+      bookmarkBtn.style.marginTop = "5px";
+      bookmarkBtn.style.padding = "5px 10px";
+      bookmarkBtn.style.cursor = "pointer";
+      bookmarkBtn.style.backgroundColor = "#D8586D";
+      bookmarkBtn.style.color = "white";
+      bookmarkBtn.style.border = "none";
+      bookmarkBtn.style.borderRadius = "5px";
+      bookmarkBtn.style.fontSize = ".5vw";
+
+      bookmarkBtn.addEventListener("click", () => {
+        const target = document.getElementById(`scroller-number-label${number}`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          currentIndex = targetDivs.length - number;
+          counter.innerText = `${number} / ${targetDivs.length}`;
+        }
+      });
+
+      bookmarkViewer.appendChild(bookmarkBtn);
     });
-    
-    bookmarkViewer.appendChild(bookmarkBtn);
   });
 }
 
-function aiFun(currentUrl){
+function aiFun(currentUrl) {
   // Function to update the div list
   targetDivs = [...document.querySelectorAll(selector)].reverse();
 
@@ -337,8 +336,7 @@ function aiFun(currentUrl){
     numberSpan.className = 'scroller-number-label';
     numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
     numberSpan.innerText = `No. ${targetDivs.length - idx} `;
-    
-    numberSpan.style.display = localStorage.getItem('scrollerVisibility');
+
     numberSpan.style = `
       cursor: pointer;
       user-select: none;
@@ -365,7 +363,7 @@ function aiFun(currentUrl){
       border-radius: 6px;
       z-index: 10;
       float: left;`;
-    } else if(currentUrl.startsWith("https://claude.ai/chat/")) {
+    } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
       numberSpan.style = `
       cursor: pointer;
       position: sticky;
@@ -380,57 +378,57 @@ function aiFun(currentUrl){
       float: right;`;
     }
 
-    const url = window.location.href;
-    const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-    const current = bookmarks[url] || [];
-    // If already bookmarked, set orange background
-    if (current.includes(targetDivs.length - idx)) {
-      numberSpan.style.backgroundColor = "#D8586D";
-    }
-    // ✅ Add click listener only to the label
+    browserAPI.storage.local.get('bookmarks', (result) => {
+      let bookmarks = result.bookmarks || {};
+      const current = bookmarks[currentUrl] || [];
+      if (current.includes(targetDivs.length - idx)) {
+        numberSpan.style.backgroundColor = "#D8586D";
+      }
+    });
+
     numberSpan.addEventListener("click", (e) => {
       numberSpan.style.backgroundColor = "#D8586D";
-      e.stopPropagation(); // prevent bubbling
-    
-      const url = window.location.href;
-      let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
-    
-      // Get current list for this URL, or empty array
-      const current = bookmarks[url] || [];
-    
-      if (!current.includes(targetDivs.length - idx)) {
-        // Add the number, keeping only last 3
-        current.push(targetDivs.length - idx);
-        showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
-        if (current.length > 3) {
-          current.shift(); // remove the oldest
+      e.stopPropagation();
+
+      browserAPI.storage.local.get('bookmarks', (result) => {
+        let bookmarks = result.bookmarks || {};
+        const current = bookmarks[currentUrl] || [];
+
+        if (!current.includes(targetDivs.length - idx)) {
+          current.push(targetDivs.length - idx);
+          showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
+          if (current.length > 3) {
+            current.shift();
+          }
+        } else {
+          showToast(`❗${targetDivs.length - idx} Already bookmarked`);
         }
-      } else {
-        showToast(`❗${targetDivs.length - idx} Already bookmarked`);
-      }
-    
-      bookmarks[url] = current;
-      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-      bookmarksGetter();
+
+        bookmarks[currentUrl] = current;
+        browserAPI.storage.local.set({ bookmarks });
+        bookmarksGetter();
+      });
     });
+
     numberSpan.addEventListener("dblclick", (e) => {
       pinMessage((targetDivs.length - idx), targetDivs[idx].textContent.slice(0, pinnedMessageLimit));
     });
+
     div.prepend(numberSpan);
   });
 
   updateCounter();
-  
+
   function updateCounter() {
     counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
   }
 
   function scrolltoItem(index) {
-      targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
-      currentIndex = index;
-      updateCounter();
+    targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
+    currentIndex = index;
+    updateCounter();
   }
-  
+
   function showToast(message) {
     const toast = document.createElement('div');
     toast.innerText = message;
@@ -455,100 +453,88 @@ function aiFun(currentUrl){
   }
 
   function pinMessage(numberofMessage, message) {
-      // Remove any existing pinned message
-      const existing = document.querySelector('.pinned-message');
-      if (existing) {
-        existing.remove();
-      }
-    
-      // Create pinned message container
-      const pinedMessage = document.createElement('div');
-      pinedMessage.classList.add('pinned-message');
-      pinedMessage.style = `
-        position: fixed;
-        bottom: 7vh;
-        right: 2vw;
-        max-width: 20%;
-        background-color: #00a6ed;
-        color: white;
-        padding: 10px 14px;
-        font-size: .7vw;
-        border-radius: 8px;
-        z-index: 9999;
-        box-shadow: 0 0 8px rgba(0,0,0,0.2);
-        transition: opacity 0.3s;
-      `;
-    
-      // Add message text
-      const messageText = document.createElement('div');
-      messageText.innerText = `📌Pinned Message: ${message}...`;
-      pinedMessage.appendChild(messageText);
-    
-      // Create close button
-      const closeBtn = document.createElement('button');
-      closeBtn.innerText = 'Close';
-      closeBtn.style = `
-        margin-top: 10px;
-        background-color: white;
-        color: #00a6ed;
-        border: none;
-        padding: 5px 10px;
-        font-size: .7vw;
-        border-radius: 5px;
-        cursor: pointer;
-      `;
-      
-      // Close on click
-      closeBtn.addEventListener('click', () => {
-        pinedMessage.style.opacity = '0';
-        setTimeout(() => pinedMessage.remove(), 300);
-      });
-      
-      // Source button (e.g., "Action")
-      const sourceBtn = document.createElement('button');
-      sourceBtn.innerText = `Goto No. ${numberofMessage}`;
-      sourceBtn.style = `
-        background-color: white;
-        color: #00a6ed;
-        border: none;
-        padding: 5px 10px;
-        font-size: .7vw;
-        border-radius: 5px;
-        margin-left: 15px;
-        cursor: pointer;
-        flex: 1;
-      `;
-      sourceBtn.addEventListener('click', () => {
-        scrolltoItem((targetDivs.length - numberofMessage));
-        currentIndex = numberofMessage;
-      });
+    const existing = document.querySelector('.pinned-message');
+    if (existing) {
+      existing.remove();
+    }
 
-      // Append buttons to the message
-      pinedMessage.appendChild(closeBtn);
-      pinedMessage.appendChild(sourceBtn);
-      
-      // Add to document
-      document.body.appendChild(pinedMessage);      
+    const pinedMessage = document.createElement('div');
+    pinedMessage.classList.add('pinned-message');
+    pinedMessage.style = `
+      position: fixed;
+      bottom: 7vh;
+      right: 2vw;
+      max-width: 20%;
+      background-color: #00a6ed;
+      color: white;
+      padding: 10px 14px;
+      font-size: .7vw;
+      border-radius: 8px;
+      z-index: 9999;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+      transition: opacity 0.3s;
+    `;
+
+    const messageText = document.createElement('div');
+    messageText.innerText = `📌Pinned Message: ${message}...`;
+    pinedMessage.appendChild(messageText);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.innerText = 'Close';
+    closeBtn.style = `
+      margin-top: 10px;
+      background-color: white;
+      color: #00a6ed;
+      border: none;
+      padding: 5px 10px;
+      font-size: .7vw;
+      border-radius: 5px;
+      cursor: pointer;
+    `;
+
+    closeBtn.addEventListener('click', () => {
+      pinedMessage.style.opacity = '0';
+      setTimeout(() => pinedMessage.remove(), 300);
+    });
+
+    const sourceBtn = document.createElement('button');
+    sourceBtn.innerText = `Goto No. ${numberofMessage}`;
+    sourceBtn.style = `
+      background-color: white;
+      color: #00a6ed;
+      border: none;
+      padding: 5px 10px;
+      font-size: .7vw;
+      border-radius: 5px;
+      margin-left: 15px;
+      cursor: pointer;
+      flex: 1;
+    `;
+    sourceBtn.addEventListener('click', () => {
+      scrolltoItem((targetDivs.length - numberofMessage));
+      currentIndex = numberofMessage;
+    });
+
+    pinedMessage.appendChild(closeBtn);
+    pinedMessage.appendChild(sourceBtn);
+
+    document.body.appendChild(pinedMessage);
   }
-
 }
 
 // Check if extension is enabled
 browserAPI.storage.local.get('aiscroller_enabled', function(result) {
   if (result.aiscroller_enabled === undefined) {
-    browserAPI.storage.local.set({ aiscroller_enabled: 'true' });
+    browserAPI.storage.local.set({ aiscroller_enabled: true });
+    aiscroller_enabled = true;
+  } else {
+    aiscroller_enabled = result.aiscroller_enabled !== false;
   }
-  console.log(result.aiscroller_enabled)
-  if (result.aiscroller_enabled == false) {
-    aiscroller_enabled= false;
-    console.log(result.aiscroller_enabled)
+  if (!aiscroller_enabled) {
     console.log('AI Scroller extension is disabled.');
     return;
-  }else{
-    aiscroller_enabled= true;
-    urlCheck();
-    window.addEventListener('popstate', () => setTimeout(urlCheck, 1000));
-    window.addEventListener('hashchange', () => setTimeout(urlCheck, 1000));
   }
+  urlCheck();
+  window.addEventListener('popstate', () => setTimeout(urlCheck, 1000));
+  window.addEventListener('hashchange', () => setTimeout(urlCheck, 1000));
 });
-
