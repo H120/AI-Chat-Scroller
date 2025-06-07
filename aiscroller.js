@@ -176,6 +176,7 @@ function initializeUi(){
   height: fit-content;
   z-index: 9999;
   display: ${localStorage.getItem("scrollerVisibility")};
+  display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   position: relative;
