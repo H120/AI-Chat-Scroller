@@ -4,7 +4,12 @@
   "version": "1.0",
   "description": "Scroll between divs with a specific class using Up and Down buttons.",
   "permissions": ["scripting", "activeTab", "storage"],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "https://grok.com/*",
+    "https://chatgpt.com/*",
+    "https://copilot.microsoft.com/*",
+    "https://claude.ai/*"
+  ],
   "icons": {
     "128": "icon128.png"
   },
@@ -14,7 +19,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://grok.com/*",
+        "https://chatgpt.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://claude.ai/*"
+      ],
       "js": ["aiscroller.js"]
     }
   ]
