@@ -172,6 +172,8 @@ function initializeUi(){
   margin: auto;`;
   toggleBtn.title = "Show/Hide Buttons";
 
+  console.log(localStorage.getItem("scrollerVisibility"))
+  if(localStorage.getItem("scrollerVisibility")==null){localStorage.setItem("scrollerVisibility", "flex")}
   scrollerButtonDiv.style = `
   height: fit-content;
   z-index: 9999;
