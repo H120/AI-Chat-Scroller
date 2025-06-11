@@ -3,7 +3,7 @@
   "name": "AI Chat Scroller",
   "version": "1.0",
   "description": "Scroll between divs with a specific class using Up and Down buttons.",
-  "permissions": ["scripting", "activeTab", "storage"],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": [
     "https://grok.com/*",
     "https://chatgpt.com/*",

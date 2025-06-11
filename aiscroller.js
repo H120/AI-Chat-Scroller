@@ -385,6 +385,7 @@ function aiFun(currentUrl){
     if (current.includes(targetDivs.length - idx)) {
       numberSpan.style.backgroundColor = "#D8586D";
     }
+
     // ✅ Add click listener only to the label
     numberSpan.addEventListener("click", (e) => {
       numberSpan.style.backgroundColor = "#D8586D";
@@ -552,4 +553,3 @@ chrome.storage.local.get('aiscroller_enabled', function(result) {
     });
   }
 });
-
