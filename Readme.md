@@ -31,9 +31,8 @@
 #### Claude
 ![Claude Screenshot](images/claude.png)
 
-#### Grok
-![Grok Screenshot](images/grok.png)
-
+#### Copilot
+![Copilot Screenshot](images/copilot.png)
 
 ### 🔒 Privacy
 This extension **does not** collect any personal data or track your activity.
