@@ -184,6 +184,7 @@ function initializeUi(){
   white-space: nowrap;
   margin: auto;
   cursor: pointer;`;
+  counter.title = 'Click to jump to any message by typing the number';
 
   // Show/Hide button
   toggleBtn.innerText = "AI Scroller";
@@ -250,7 +251,6 @@ function initializeUi(){
     document.getElementById("scrollerDiv").remove();
 
   document.body.appendChild(scrollerDiv);
-        console.log("Here!!!!!")
 
   counter.addEventListener("click", ()=>{
     inputNumber= Number(prompt("Jump to:"));
