@@ -375,7 +375,7 @@ function aiFun(currentUrl){
     const numberSpan = document.createElement('span');
     numberSpan.className = 'scroller-number-label';
     numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
-    numberSpan.innerText = `No. ${targetDivs.length - idx} `;
+    numberSpan.innerText = `${targetDivs.length - idx} `;
     
     numberSpan.style.display = localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
