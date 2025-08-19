@@ -13,6 +13,8 @@
 - Pin a message by double-clicking its message number
 - Jump instantly to the first or last message
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/hkjjhdgfolmahfakmobelcbjmedikegl.svg?label=Chrome%20Extension&color=blue)](https://chromewebstore.google.com/detail/ai-chat-scroller/hkjjhdgfolmahfakmobelcbjmedikegl)
+
 
 ### 🧠 Supported Platforms
 - [ChatGPT](https://chatgpt.com/)
