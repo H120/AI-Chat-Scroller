@@ -88,14 +88,13 @@ function initializeUi(){
   firstBtn.title = "Go to First";
   firstBtn.style.backgroundColor = "#00a6ed";
   firstBtn.style.border = "none";
-  firstBtn.style.borderRadius = "10px 10px 0 0";
+  firstBtn.style.borderRadius = "10px 0 0 0";
   firstBtn.style.textAlign = "center";
   firstBtn.style.fontSize = "0.6vw";
   firstBtn.style.width = "fit-content";
   firstBtn.style.minWidth = "1.8vw";
   firstBtn.style.height = "fit-content";
   firstBtn.style.padding = "3px";
-  firstBtn.style.margin = "auto";
   firstBtn.style.visibility = "hidden";
   firstBtn.style.opacity = "0";
   firstBtn.style.transition = "opacity 0.3s ease";
@@ -105,14 +104,13 @@ function initializeUi(){
   lastBtn.title = "Go to Last";
   lastBtn.style.backgroundColor = "#00a6ed";
   lastBtn.style.border = "none";
-  lastBtn.style.borderRadius = "0 0 10px 10px";
+  lastBtn.style.borderRadius = "0 0 0 10px";
   lastBtn.style.textAlign = "center";
   lastBtn.style.fontSize = "0.6vw";
   lastBtn.style.width = "fit-content";
   lastBtn.style.minWidth = "1.8vw";
   lastBtn.style.height = "fit-content";
   lastBtn.style.padding = "3px";
-  lastBtn.style.margin = "auto";
   lastBtn.style.visibility = "hidden";
   lastBtn.style.opacity = "0";
   lastBtn.style.transition = "opacity 0.3s ease";
@@ -122,34 +120,33 @@ function initializeUi(){
   upBtn.title = "Scroll Up";
   upBtn.style.backgroundColor = "#00a6ed";
   upBtn.style.border = "none";
-  upBtn.style.borderRadius = "10px 10px 0 0";
+  upBtn.style.borderRadius = "10px 0 0 0";
   upBtn.style.textAlign = "center";
   upBtn.style.fontSize = "1.2vw";
   upBtn.style.width = "fit-content";
   upBtn.style.minWidth = "2.6vw";
   upBtn.style.height = "fit-content";
   upBtn.style.padding = "5px";
-  upBtn.style.margin = "auto";
 
   downBtn.innerText = "🢃";
   downBtn.title = "Scroll Down";
   downBtn.style.backgroundColor = "#00a6ed";
   downBtn.style.border = "none";
-  downBtn.style.borderRadius = "0 0 10px 10px";
+  downBtn.style.borderRadius = "0 0 0 10px";
   downBtn.style.textAlign = "center";
   downBtn.style.fontSize = "1.2vw";
   downBtn.style.width = "fit-content";
   downBtn.style.minWidth = "2.6vw";
   downBtn.style.height = "fit-content";
   downBtn.style.padding = "5px";
-  downBtn.style.margin = "auto";
 
   // Counter
   counter.style = `
   background-color: #111827;
   color: white;
   padding: 6px 12px;
-  min-width: 70px;
+  width: fit-content;
+  min-width: 60px;
   border-radius: 6px;
   text-align: center;
   font-size: .7vw;
@@ -168,9 +165,9 @@ function initializeUi(){
   color: white;
   font-size: .6vw;
   border: none;
-  border-radius: 8px;
+  border-radius: 8px 0 0 8px;
   cursor: pointer;
-  margin: auto;`;
+  text-align: right;`;
   toggleBtn.title = "Show/Hide Buttons";
 
   console.log(localStorage.getItem("scrollerVisibility"))
@@ -181,6 +178,7 @@ function initializeUi(){
   display: ${localStorage.getItem("scrollerVisibility")};
   flex-direction: column;
   flex-wrap: nowrap;
+  align-items: flex-end;
   position: relative;
   margin: auto;`;
 
@@ -205,7 +203,7 @@ function initializeUi(){
   scrollerDiv.style = `
   position: fixed;
   width: 4vw;
-  right: 2vw;
+  right: 0vw;
   top: 15vh;
   height: fit-content;
   z-index: 9999;
