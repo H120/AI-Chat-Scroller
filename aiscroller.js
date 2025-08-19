@@ -156,7 +156,8 @@ function initializeUi(){
   font-family: sans-serif;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   white-space: nowrap;
-  margin: auto;`;
+  margin: auto;
+  cursor: pointer;`;
 
   // Show/Hide button
   toggleBtn.innerText = "AI Scroller";
@@ -222,6 +223,13 @@ function initializeUi(){
     document.getElementById("scrollerDiv").remove();
 
   document.body.appendChild(scrollerDiv);
+
+  counter.addEventListener("click", ()=>{
+    inputNumber= Number(prompt("Jump to:"));
+    if(inputNumber <= targetDivs.length){
+      scrolltoItem(targetDivs.length - inputNumber);
+    }
+  })
 
   // Add hover events to show/hide first and last buttons with animation
   scrollerButtonDiv.addEventListener("mouseenter", () => {
@@ -518,7 +526,7 @@ function aiFun(currentUrl){
         flex: 1;
       `;
       sourceBtn.addEventListener('click', () => {
-        scrolltoItem((targetDivs.length - numberofMessage));
+        scrolltoItem(targetDivs.length - numberofMessage);
         currentIndex = numberofMessage;
       });
 
