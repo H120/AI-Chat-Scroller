@@ -73,6 +73,32 @@ function initializeVal(){
   initializeUi();
 }
 function initializeUi(){
+  // Add a style element to ensure consistent fonts across all websites
+  const fontStyle = document.createElement('style');
+  fontStyle.textContent = `
+    @font-face {
+      font-family: 'AIScrollerFont';
+      src: local('Arial'), local('Helvetica'), local('sans-serif');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    #scrollerDiv, 
+    #scrollerDiv *,
+    #scrollerDiv button,
+    #scrollerDiv div {
+      font-family: 'AIScrollerFont', Arial, sans-serif !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      font-size-adjust: none !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+    }
+  `;
+  document.head.appendChild(fontStyle);
+  
   upBtn = document.createElement('button');
   downBtn = document.createElement('button');
   counter = document.createElement('div');
@@ -91,6 +117,7 @@ function initializeUi(){
   firstBtn.style.borderRadius = "10px 0 0 0";
   firstBtn.style.textAlign = "center";
   firstBtn.style.fontSize = "0.6vw";
+  firstBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   firstBtn.style.width = "fit-content";
   firstBtn.style.minWidth = "1.8vw";
   firstBtn.style.height = "fit-content";
@@ -107,6 +134,7 @@ function initializeUi(){
   lastBtn.style.borderRadius = "0 0 0 10px";
   lastBtn.style.textAlign = "center";
   lastBtn.style.fontSize = "0.6vw";
+  lastBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   lastBtn.style.width = "fit-content";
   lastBtn.style.minWidth = "1.8vw";
   lastBtn.style.height = "fit-content";
@@ -122,23 +150,29 @@ function initializeUi(){
   upBtn.style.border = "none";
   upBtn.style.borderRadius = "10px 0 0 0";
   upBtn.style.textAlign = "center";
-  upBtn.style.fontSize = "1.2vw";
+  upBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   upBtn.style.width = "fit-content";
   upBtn.style.minWidth = "2.6vw";
   upBtn.style.height = "fit-content";
   upBtn.style.padding = "5px";
+  upBtn.style.display = "flex";
+  upBtn.style.alignItems = "center";
+  upBtn.style.justifyContent = "center";
 
-  downBtn.innerText = "🢃";
+  downBtn.innerText = "🢃";  
   downBtn.title = "Scroll Down";
   downBtn.style.backgroundColor = "#00a6ed";
   downBtn.style.border = "none";
   downBtn.style.borderRadius = "0 0 0 10px";
   downBtn.style.textAlign = "center";
-  downBtn.style.fontSize = "1.2vw";
+  downBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   downBtn.style.width = "fit-content";
   downBtn.style.minWidth = "2.6vw";
   downBtn.style.height = "fit-content";
   downBtn.style.padding = "5px";
+  downBtn.style.display = "flex";
+  downBtn.style.alignItems = "center";
+  downBtn.style.justifyContent = "center";
 
   // Counter
   counter.style = `
@@ -150,7 +184,7 @@ function initializeUi(){
   border-radius: 6px;
   text-align: center;
   font-size: .7vw;
-  font-family: sans-serif;
+  font-family: 'AIScrollerFont', Arial, sans-serif !important;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   white-space: nowrap;
   margin: auto;
@@ -164,6 +198,7 @@ function initializeUi(){
   background-color: #00a6ed;
   color: white;
   font-size: .6vw;
+  font-family: 'AIScrollerFont', Arial, sans-serif !important;
   border: none;
   border-radius: 8px 0 0 8px;
   cursor: pointer;
