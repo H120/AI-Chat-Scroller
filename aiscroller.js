@@ -1,6 +1,7 @@
 aiscroller_enabled= null;
 
 function urlCheck(){
+  setTimeout(() => {
     if(aiscroller_enabled){
 
       const currentUrl = window.location.href;
@@ -61,6 +62,8 @@ function urlCheck(){
         
       }
     }
+  }, 5000);
+
 }
 function initializeVal(){
   pinnedMessageLimit= 200;
