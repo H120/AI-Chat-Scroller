@@ -108,7 +108,7 @@ function initializeUi(){
   lastBtn = document.createElement('button');
 
   // Go to First button
-  firstBtn.innerText = "🢁🢁";
+  firstBtn.innerText = "↑↑";
   firstBtn.title = "Go to First";
   firstBtn.style.backgroundColor = "#00a6ed";
   firstBtn.style.border = "none";
@@ -142,7 +142,7 @@ function initializeUi(){
   lastBtn.style.transition = "opacity 0.3s ease";
 
   // Scroll buttons
-  upBtn.innerText = "🢁";
+  upBtn.innerText = "⬆";
   upBtn.title = "Scroll Up";
   upBtn.style.backgroundColor = "#00a6ed";
   upBtn.style.border = "none";
