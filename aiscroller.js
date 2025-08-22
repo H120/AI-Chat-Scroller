@@ -14,7 +14,9 @@ function urlCheck(){
         "https://claude.ai/chat/",
         "claude.ai/chat/",
         "https://copilot.microsoft.com/chats/",
-        "copilot.microsoft.com/chats/"
+        "copilot.microsoft.com/chats/",
+        "https://gemini.google.com/app/",
+        "gemini.google.com/app/"
       ];
       targetDivs = [];
       if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
@@ -25,6 +27,8 @@ function urlCheck(){
         selector = "div[data-test-render-count]";
       } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
         selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+      }else if (currentUrl.startsWith("https://gemini.google.com/app/") || currentUrl.startsWith("gemini.google.com/app/")) {
+        selector = ['user-query' , 'model-response'];
       }
       if (!validUrls.some(url => currentUrl.startsWith(url))) {
         return;
@@ -403,6 +407,20 @@ function aiFun(currentUrl){
       float: left;`;
     } else if(currentUrl.startsWith("https://claude.ai/chat/")) {
       numberSpan.style = `
+      cursor: pointer;
+      position: sticky;
+      top: 10px;
+      margin-right: 10px;
+      background: #00a6ed;
+      color: white;
+      font-size: 14px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      z-index: 10;
+      float: right;`;
+    } else if(currentUrl.startsWith("https://gemini.google.com/app/")) {
+      numberSpan.style = `
+      max-height: 17px;
       cursor: pointer;
       position: sticky;
       top: 10px;

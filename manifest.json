@@ -8,7 +8,8 @@
     "https://grok.com/*",
     "https://chatgpt.com/*",
     "https://copilot.microsoft.com/*",
-    "https://claude.ai/*"
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
   ],
   "icons": {
     "128": "icon128.png"
@@ -23,7 +24,8 @@
         "https://grok.com/*",
         "https://chatgpt.com/*",
         "https://copilot.microsoft.com/*",
-        "https://claude.ai/*"
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
       ],
       "js": ["aiscroller.js"]
     }
