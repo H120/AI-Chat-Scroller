@@ -125,7 +125,7 @@ function initializeUi(){
   firstBtn.style.transition = "opacity 0.3s ease";
 
   // Go to Last button
-  lastBtn.innerText = "🢃🢃";
+  lastBtn.innerText = "↓↓";
   lastBtn.title = "Go to Last";
   lastBtn.style.backgroundColor = "#00a6ed";
   lastBtn.style.border = "none";
@@ -142,7 +142,7 @@ function initializeUi(){
   lastBtn.style.transition = "opacity 0.3s ease";
 
   // Scroll buttons
-  upBtn.innerText = "⬆";
+  upBtn.innerText = "↑";
   upBtn.title = "Scroll Up";
   upBtn.style.backgroundColor = "#00a6ed";
   upBtn.style.border = "none";
@@ -157,7 +157,7 @@ function initializeUi(){
   upBtn.style.alignItems = "center";
   upBtn.style.justifyContent = "center";
 
-  downBtn.innerText = "🢃";  
+  downBtn.innerText = "↓";  
   downBtn.title = "Scroll Down";
   downBtn.style.backgroundColor = "#00a6ed";
   downBtn.style.border = "none";
