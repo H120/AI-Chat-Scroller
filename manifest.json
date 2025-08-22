@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Chat Scroller",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Scroll between divs with a specific class using Up and Down buttons.",
   "permissions": ["activeTab", "storage"],
   "host_permissions": [
