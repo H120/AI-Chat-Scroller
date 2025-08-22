@@ -1,7 +1,7 @@
-# AI Chat Scroller 1.1
+# AI Chat Scroller 1.2
 ![Logo](images/logo.png)
 
-**AI Chat Scroller** is a lightweight Chrome extension that enhances your experience on popular AI chat platforms such as ChatGPT, Grok, Claude, and Copilot.
+**AI Chat Scroller** is a lightweight Chrome extension that enhances your experience on popular AI chat platforms such as ChatGPT, Gemini, Grok, Claude, and Copilot.
 
 ### ✨ Features
 - Auto-numbers AI messages in chat
@@ -19,6 +19,7 @@
 
 ### 🧠 Supported Platforms
 - [ChatGPT](https://chatgpt.com/)
+- [Gemini](https://gemini.google.com/app)
 - [Grok](https://grok.com/chat/)
 - [Claude](https://claude.ai/chat/)
 - [Copilot](https://copilot.microsoft.com/)
