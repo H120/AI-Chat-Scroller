@@ -118,7 +118,7 @@ function initializeUi(){
   firstBtn.style.border = "none";
   firstBtn.style.borderRadius = "10px 0 0 0";
   firstBtn.style.textAlign = "center";
-  firstBtn.style.fontSize = "0.6vw";
+  firstBtn.style.fontSize = "1vw";
   firstBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   firstBtn.style.width = "fit-content";
   firstBtn.style.minWidth = "1.8vw";
@@ -135,7 +135,7 @@ function initializeUi(){
   lastBtn.style.border = "none";
   lastBtn.style.borderRadius = "0 0 0 10px";
   lastBtn.style.textAlign = "center";
-  lastBtn.style.fontSize = "0.6vw";
+  lastBtn.style.fontSize = "1vw";
   lastBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   lastBtn.style.width = "fit-content";
   lastBtn.style.minWidth = "1.8vw";
@@ -153,6 +153,7 @@ function initializeUi(){
   upBtn.style.borderRadius = "10px 0 0 0";
   upBtn.style.textAlign = "center";
   upBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
+  upBtn.style.fontSize = "1.5vw";
   upBtn.style.width = "fit-content";
   upBtn.style.minWidth = "2.6vw";
   upBtn.style.height = "fit-content";
@@ -168,6 +169,7 @@ function initializeUi(){
   downBtn.style.borderRadius = "0 0 0 10px";
   downBtn.style.textAlign = "center";
   downBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
+  downBtn.style.fontSize = "1.5vw";
   downBtn.style.width = "fit-content";
   downBtn.style.minWidth = "2.6vw";
   downBtn.style.height = "fit-content";
@@ -185,22 +187,21 @@ function initializeUi(){
   min-width: 60px;
   border-radius: 6px 0 0 6px;
   text-align: center;
-  font-size: .7vw;
+  font-size: .8vw;
   font-family: 'AIScrollerFont', Arial, sans-serif !important;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   white-space: nowrap;
-  margin: auto;
+  align-items: flex-end;
   cursor: pointer;`;
   counter.title = 'Click to jump to any message by typing the number';
 
   // Show/Hide button
   toggleBtn.innerText = "AI Scroller";
   toggleBtn.style = `
-  width: fit-content;
   padding: 5px 8px;
   background-color: #00a6ed;
   color: white;
-  font-size: .6vw;
+  font-size: .8vw;
   font-family: 'AIScrollerFont', Arial, sans-serif !important;
   border: none;
   border-radius: 8px 0 0 8px;
@@ -216,8 +217,7 @@ function initializeUi(){
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: flex-end;
-  position: relative;
-  margin: auto;`;
+  position: relative;`;
 
   bookmarkViewer.style = `
   height: fit-content;
@@ -239,7 +239,7 @@ function initializeUi(){
   scrollerDiv.id = "scrollerDiv";
   scrollerDiv.style = `
   position: fixed;
-  width: 4vw;
+  width: fit-content;
   right: 0vw;
   top: 15vh;
   height: fit-content;
@@ -350,7 +350,7 @@ function bookmarksGetter(){
     bookmarkBtn.style.color = "white";
     bookmarkBtn.style.border = "none";
     bookmarkBtn.style.borderRadius = "5px";
-    bookmarkBtn.style.fontSize = ".5vw";
+    bookmarkBtn.style.fontSize = ".7vw";
   
     bookmarkBtn.addEventListener("click", () => {
       const target = document.getElementById(`scroller-number-label${number}`);
@@ -387,7 +387,7 @@ function aiFun(currentUrl){
       margin-right: 10px;
       background: #00a6ed;
       color: white;
-      font-size: 14px;
+      font-size: .7vw;
       padding: 2px 6px;
       border-radius: 6px;
       z-index: 10;
