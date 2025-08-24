@@ -183,7 +183,7 @@ function initializeUi(){
   padding: 6px 12px;
   width: fit-content;
   min-width: 60px;
-  border-radius: 6px;
+  border-radius: 6px 0 0 6px;
   text-align: center;
   font-size: .7vw;
   font-family: 'AIScrollerFont', Arial, sans-serif !important;
@@ -323,7 +323,7 @@ function initializeUi(){
   });
 
   function updateCounter() {
-    counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
+    counter.innerText = `🔍 ${targetDivs.length - currentIndex} / ${targetDivs.length}`;
   }
 
   function scrolltoItem(index) {
@@ -357,7 +357,7 @@ function bookmarksGetter(){
       if (target) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
         currentIndex = targetDivs.length - number;
-        counter.innerText = `${number} / ${targetDivs.length}`;
+        counter.innerText = `🔍 ${number} / ${targetDivs.length}`;
       }
     });
     
@@ -477,7 +477,7 @@ function aiFun(currentUrl){
   updateCounter();
   
   function updateCounter() {
-    counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
+    counter.innerText = `🔍 ${targetDivs.length - currentIndex} / ${targetDivs.length}`;
   }
 
   function scrolltoItem(index) {
