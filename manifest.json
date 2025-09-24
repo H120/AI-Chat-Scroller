@@ -1,12 +1,24 @@
 {
   "manifest_version": 3,
   "name": "AI Chat Scroller",
-  "version": "1.0",
+  "version": "1.2.1",
   "description": "Scroll between divs with a specific class using Up and Down buttons.",
-  "permissions": ["scripting", "activeTab", "storage"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": [
+    "https://grok.com/*",
+    "https://chatgpt.com/*",
+    "https://copilot.microsoft.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
+  ],
   "icons": {
     "128": "icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "h120developer@gmail.com",
+      "strict_min_version": "109.0"
+    }
   },
   "action": {
     "default_title": "AI Chat Scroller",
@@ -14,15 +26,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://grok.com/*",
+        "https://chatgpt.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
       "js": ["aiscroller.js"]
     }
-  ],
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "h120developer@gmail.com",
-      "strict_min_version": "78.0"
-    }
-  }
+  ]
 }
   

@@ -1,77 +1,143 @@
-aiscroller_enabled = null;
+let aiscroller_enabled = null;
+let selector = '';
+let targetDivs = [];
+let pinnedMessageLimit = 200;
+let currentIndex = 0;
+let upBtn, downBtn, counter, toggleBtn, scrollerButtonDiv, bookmarkViewer, scrollerDiv, firstBtn, lastBtn;
 
-const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
-
-function urlCheck() {
-  console.log(aiscroller_enabled)
-  if (aiscroller_enabled) {
-    console.log("Scroller script disabled: aiscroller_enabled is true.");
-
-    const currentUrl = window.location.href;
-    selector = '';
-    const validUrls = [
-      "https://chatgpt.com/",
-      "https://grok.com/chat/",
-      "https://claude.ai/chat/",
-      "https://copilot.microsoft.com/chats/"
-    ];
-    targetDivs = [];
-    if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
-      selector = "article.text-token-text-primary.w-full";
-    } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
-      selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
-    } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
-      selector = "div[data-test-render-count]";
-    } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
-      selector = 'div[data-tabster="{"groupper":{"tabbability":2},"focusable":{}}"], div[data-tabster]';
-    }
-    if (!validUrls.some(url => currentUrl.startsWith(url))) {
-      console.log("Scroller script disabled: not a valid URL.");
-      return;
+// Cross-browser API alias
+const extApi = typeof browser !== 'undefined' ? browser : chrome;
+// Promise/callback-compatible wrappers for storage
+function storageGet(key, cb) {
+  try {
+    const res = extApi.storage.local.get(key);
+    if (res && typeof res.then === 'function') {
+      res.then(cb).catch(() => cb({}));
     } else {
-      console.log("Scroller script started.");
-      initializeVal();
-      aiFun(currentUrl);
-      const observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((node) => {
-              if (
-                node.nodeType === Node.ELEMENT_NODE &&
-                node.matches &&
-                node.matches(selector)
-              ) {
-                aiFun(currentUrl);
-              }
-            });
-            mutation.removedNodes.forEach((node) => {
-              if (
-                node.nodeType === Node.ELEMENT_NODE &&
-                node.matches &&
-                node.matches(selector)
-              ) {
-                aiFun(currentUrl);
-              }
-            });
-          }
-        }
-      });
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
+      extApi.storage.local.get(key, cb);
     }
+  } catch (e) {
+    try { extApi.storage.local.get(key, cb); } catch (_) { cb({}); }
+  }
+}
+function storageSet(obj, cb) {
+  try {
+    const res = extApi.storage.local.set(obj);
+    if (res && typeof res.then === 'function') {
+      res.then(() => cb && cb()).catch(() => cb && cb());
+    } else {
+      extApi.storage.local.set(obj, cb);
+    }
+  } catch (e) {
+    try { extApi.storage.local.set(obj, cb); } catch (_) { /* noop */ }
   }
 }
 
-function initializeVal() {
-  pinnedMessageLimit = 200;
+function urlCheck(){
+  setTimeout(() => {
+    if(aiscroller_enabled){
+
+      const currentUrl = window.location.href;
+      selector = '';
+      const validUrls = [
+        "https://chatgpt.com/",
+        "chatgpt.com/",
+        "https://grok.com/chat/",
+        "grok.com/chat/",
+        "https://claude.ai/chat/",
+        "claude.ai/chat/",
+        "https://copilot.microsoft.com/chats/",
+        "copilot.microsoft.com/chats/",
+        "https://gemini.google.com/app/",
+        "gemini.google.com/app/"
+      ];
+      targetDivs = [];
+      if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
+        selector = "article.text-token-text-primary.w-full";
+      } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
+        selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
+      } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
+        selector = "div[data-test-render-count]";
+      } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
+        selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+      }else if (currentUrl.startsWith("https://gemini.google.com/app/") || currentUrl.startsWith("gemini.google.com/app/")) {
+        selector = 'user-query, model-response';
+      }
+      if (!validUrls.some(url => currentUrl.startsWith(url))) {
+        return;
+      }else{
+        // Avoid running with an empty/invalid selector (prevents querySelectorAll errors)
+        if (!selector || typeof selector !== 'string' || selector.trim() === '') {
+          return;
+        }
+        initializeVal();
+        aiFun(currentUrl);
+        const observer = new MutationObserver((mutationsList) => {
+          for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+              mutation.addedNodes.forEach((node) => {
+                if (
+                  node.nodeType === Node.ELEMENT_NODE &&
+                  node.matches &&
+                  node.matches(selector)
+                ) {
+                  aiFun(currentUrl);
+                }
+              });
+              mutation.removedNodes.forEach((node) => {
+                if (
+                  node.nodeType === Node.ELEMENT_NODE &&
+                  node.matches &&
+                  node.matches(selector)
+                ) {
+                  aiFun(currentUrl);
+                }
+              });
+            }
+          }
+        });
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+        
+      }
+    }
+  }, 5000);
+
+}
+function initializeVal(){
+  pinnedMessageLimit= 200;
   currentIndex = 0;
   initializeUi();
 }
-
-function initializeUi() {
+function initializeUi(){
+  // Add a style element to ensure consistent fonts across all websites
+  const fontStyle = document.createElement('style');
+  fontStyle.textContent = `
+    @font-face {
+      font-family: 'AIScrollerFont';
+      src: local('Arial'), local('Helvetica'), local('sans-serif');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    #scrollerDiv, 
+    #scrollerDiv *,
+    #scrollerDiv button,
+    #scrollerDiv div {
+      font-family: 'AIScrollerFont', Arial, sans-serif !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      font-size-adjust: none !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+    }
+  `;
+  document.head.appendChild(fontStyle);
+  
   upBtn = document.createElement('button');
   downBtn = document.createElement('button');
   counter = document.createElement('div');
@@ -83,97 +149,112 @@ function initializeUi() {
   lastBtn = document.createElement('button');
 
   // Go to First button
-  firstBtn.innerText = "🢁🢁";
+  firstBtn.innerText = "↑↑";
   firstBtn.title = "Go to First";
   firstBtn.style.backgroundColor = "#00a6ed";
   firstBtn.style.border = "none";
-  firstBtn.style.borderRadius = "10px 10px 0 0";
+  firstBtn.style.borderRadius = "10px 0 0 0";
   firstBtn.style.textAlign = "center";
-  firstBtn.style.fontSize = "0.6vw";
+  firstBtn.style.fontSize = "1vw";
+  firstBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   firstBtn.style.width = "fit-content";
   firstBtn.style.minWidth = "1.8vw";
   firstBtn.style.height = "fit-content";
   firstBtn.style.padding = "3px";
-  firstBtn.style.margin = "auto";
   firstBtn.style.visibility = "hidden";
   firstBtn.style.opacity = "0";
   firstBtn.style.transition = "opacity 0.3s ease";
 
   // Go to Last button
-  lastBtn.innerText = "🢃🢃";
+  lastBtn.innerText = "↓↓";
   lastBtn.title = "Go to Last";
   lastBtn.style.backgroundColor = "#00a6ed";
   lastBtn.style.border = "none";
-  lastBtn.style.borderRadius = "0 0 10px 10px";
+  lastBtn.style.borderRadius = "0 0 0 10px";
   lastBtn.style.textAlign = "center";
-  lastBtn.style.fontSize = "0.6vw";
+  lastBtn.style.fontSize = "1vw";
+  lastBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
   lastBtn.style.width = "fit-content";
   lastBtn.style.minWidth = "1.8vw";
   lastBtn.style.height = "fit-content";
   lastBtn.style.padding = "3px";
-  lastBtn.style.margin = "auto";
   lastBtn.style.visibility = "hidden";
   lastBtn.style.opacity = "0";
   lastBtn.style.transition = "opacity 0.3s ease";
 
   // Scroll buttons
-  upBtn.innerText = "🢁";
+  upBtn.innerText = "↑";
   upBtn.title = "Scroll Up";
   upBtn.style.backgroundColor = "#00a6ed";
   upBtn.style.border = "none";
-  upBtn.style.borderRadius = "10px 10px 0 0";
+  upBtn.style.borderRadius = "10px 0 0 0";
   upBtn.style.textAlign = "center";
-  upBtn.style.fontSize = "1.2vw";
+  upBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
+  upBtn.style.fontSize = "1.5vw";
   upBtn.style.width = "fit-content";
   upBtn.style.minWidth = "2.6vw";
   upBtn.style.height = "fit-content";
   upBtn.style.padding = "5px";
-  upBtn.style.margin = "auto";
+  upBtn.style.display = "flex";
+  upBtn.style.alignItems = "center";
+  upBtn.style.justifyContent = "center";
 
-  downBtn.innerText = "🢃";
+  downBtn.innerText = "↓";  
   downBtn.title = "Scroll Down";
   downBtn.style.backgroundColor = "#00a6ed";
   downBtn.style.border = "none";
-  downBtn.style.borderRadius = "0 0 10px 10px";
+  downBtn.style.borderRadius = "0 0 0 10px";
   downBtn.style.textAlign = "center";
-  downBtn.style.fontSize = "1.2vw";
+  downBtn.style.fontFamily = "'AIScrollerFont', Arial, sans-serif !important";
+  downBtn.style.fontSize = "1.5vw";
   downBtn.style.width = "fit-content";
   downBtn.style.minWidth = "2.6vw";
   downBtn.style.height = "fit-content";
   downBtn.style.padding = "5px";
-  downBtn.style.margin = "auto";
+  downBtn.style.display = "flex";
+  downBtn.style.alignItems = "center";
+  downBtn.style.justifyContent = "center";
 
   // Counter
   counter.style = `
   background-color: #111827;
   color: white;
   padding: 6px 12px;
-  min-width: 70px;
-  border-radius: 6px;
+  width: fit-content;
+  min-width: 60px;
+  border-radius: 6px 0 0 6px;
   text-align: center;
-  font-size: .7vw;
-  font-family: sans-serif;
+  font-size: .8vw;
+  font-family: 'AIScrollerFont', Arial, sans-serif !important;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   white-space: nowrap;
-  margin: auto;`;
+  align-items: flex-end;
+  cursor: pointer;`;
+  counter.title = 'Click to jump to any message by typing the number';
 
   // Show/Hide button
   toggleBtn.innerText = "AI Scroller";
   toggleBtn.style = `
-  width: fit-content;
   padding: 5px 8px;
   background-color: #00a6ed;
   color: white;
-  font-size: .6vw;
+  font-size: .8vw;
+  font-family: 'AIScrollerFont', Arial, sans-serif !important;
   border: none;
-  border-radius: 8px;
+  border-radius: 8px 0 0 8px;
   cursor: pointer;
-  margin: auto;`;
+  text-align: right;`;
   toggleBtn.title = "Show/Hide Buttons";
 
-  browserAPI.storage.local.get('scrollerVisibility', (result) => {
-    scrollerButtonDiv.style.display = result.scrollerVisibility || 'flex';
-  });
+  if(localStorage.getItem("scrollerVisibility")==null){localStorage.setItem("scrollerVisibility", "flex")}
+  scrollerButtonDiv.style = `
+  height: fit-content;
+  z-index: 9999;
+  display: ${localStorage.getItem("scrollerVisibility")};
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  position: relative;`;
 
   bookmarkViewer.style = `
   height: fit-content;
@@ -195,8 +276,8 @@ function initializeUi() {
   scrollerDiv.id = "scrollerDiv";
   scrollerDiv.style = `
   position: fixed;
-  width: 4vw;
-  right: 2vw;
+  width: fit-content;
+  right: 0vw;
   top: 15vh;
   height: fit-content;
   z-index: 9999;
@@ -210,10 +291,17 @@ function initializeUi() {
   scrollerDiv.appendChild(toggleBtn);
   scrollerDiv.appendChild(scrollerButtonDiv);
 
-  if (document.getElementById("scrollerDiv"))
+  if(document.getElementById("scrollerDiv"))
     document.getElementById("scrollerDiv").remove();
 
   document.body.appendChild(scrollerDiv);
+
+  counter.addEventListener("click", ()=>{
+    inputNumber= Number(prompt("Jump to:"));
+    if(inputNumber <= targetDivs.length){
+      scrolltoItem(targetDivs.length - inputNumber);
+    }
+  })
 
   // Add hover events to show/hide first and last buttons with animation
   scrollerButtonDiv.addEventListener("mouseenter", () => {
@@ -245,85 +333,75 @@ function initializeUi() {
   downBtn.addEventListener("click", () => {
     gotoPrev();
   });
-
-  function gotoFirst() {
-    scrolltoItem(0);
-    currentIndex = 0;
-  }
-
-  function gotoLast() {
+  function gotoFirst(){
     scrolltoItem(targetDivs.length - 1);
     currentIndex = targetDivs.length - 1;
   }
-
-  function gotoNext() {
+  function gotoLast(){
+    scrolltoItem(0);
+    currentIndex = 0;
+  }
+  function gotoNext(){
     if (currentIndex < targetDivs.length - 1) {
       scrolltoItem(currentIndex + 1);
     }
   }
-
-  function gotoPrev() {
+  function gotoPrev(){
     if (currentIndex > 0) {
       scrolltoItem(currentIndex - 1);
     }
   }
-
   // Toggle visibility of buttons and counter
   toggleBtn.addEventListener("click", () => {
     const isVisible = scrollerButtonDiv.style.display !== "none";
     const newDisplay = isVisible ? "none" : "flex";
-    browserAPI.storage.local.set({ scrollerVisibility: newDisplay });
+    localStorage.setItem('scrollerVisibility', newDisplay);
     scrollerButtonDiv.style.display = newDisplay;
   });
 
   function updateCounter() {
-    counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
+    counter.innerText = `🔍 ${targetDivs.length - currentIndex} / ${targetDivs.length}`;
   }
 
   function scrolltoItem(index) {
-    targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
-    currentIndex = index;
-    updateCounter();
+      targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
+      currentIndex = index;
+      updateCounter();
   }
-
   bookmarksGetter();
 }
-
-function bookmarksGetter() {
+function bookmarksGetter(){
   const url = window.location.href;
-  browserAPI.storage.local.get('bookmarks', (result) => {
-    let bookmarks = result.bookmarks || {};
-    bookmarkViewer.innerHTML = "";
-    const bookmarkedNumbers = bookmarks[url] || [];
-    bookmarkedNumbers.forEach(number => {
-      const bookmarkBtn = document.createElement("button");
-      bookmarkBtn.textContent = `No. ${number}`;
-      bookmarkBtn.style.width = "full";
-      bookmarkBtn.style.margin = "auto";
-      bookmarkBtn.style.marginTop = "5px";
-      bookmarkBtn.style.padding = "5px 10px";
-      bookmarkBtn.style.cursor = "pointer";
-      bookmarkBtn.style.backgroundColor = "#D8586D";
-      bookmarkBtn.style.color = "white";
-      bookmarkBtn.style.border = "none";
-      bookmarkBtn.style.borderRadius = "5px";
-      bookmarkBtn.style.fontSize = ".5vw";
-
-      bookmarkBtn.addEventListener("click", () => {
-        const target = document.getElementById(`scroller-number-label${number}`);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-          currentIndex = targetDivs.length - number;
-          counter.innerText = `${number} / ${targetDivs.length}`;
-        }
-      });
-
-      bookmarkViewer.appendChild(bookmarkBtn);
+  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+  bookmarkViewer.innerHTML = "";
+  const bookmarkedNumbers = bookmarks[url] || [];
+  bookmarkedNumbers.forEach(number => {
+    const bookmarkBtn = document.createElement("button");
+    bookmarkBtn.textContent = `No. ${number}`;
+    bookmarkBtn.style.width = "full";
+    bookmarkBtn.style.margin = "auto";
+    bookmarkBtn.style.marginTop = "5px";
+    bookmarkBtn.style.padding = "5px 10px";
+    bookmarkBtn.style.cursor = "pointer";
+    bookmarkBtn.style.backgroundColor = "#D8586D";
+    bookmarkBtn.style.color = "white";
+    bookmarkBtn.style.border = "none";
+    bookmarkBtn.style.borderRadius = "5px";
+    bookmarkBtn.style.fontSize = ".7vw";
+  
+    bookmarkBtn.addEventListener("click", () => {
+      const target = document.getElementById(`scroller-number-label${number}`);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        currentIndex = targetDivs.length - number;
+        counter.innerText = `🔍 ${number} / ${targetDivs.length}`;
+      }
     });
+    
+    bookmarkViewer.appendChild(bookmarkBtn);
   });
 }
-
-function aiFun(currentUrl) {
+function aiFun(currentUrl){
   // Function to update the div list
   targetDivs = [...document.querySelectorAll(selector)].reverse();
 
@@ -335,8 +413,9 @@ function aiFun(currentUrl) {
     const numberSpan = document.createElement('span');
     numberSpan.className = 'scroller-number-label';
     numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
-    numberSpan.innerText = `No. ${targetDivs.length - idx} `;
-
+    numberSpan.innerText = `${targetDivs.length - idx} `;
+    
+    numberSpan.style.display = localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
       cursor: pointer;
       user-select: none;
@@ -345,7 +424,7 @@ function aiFun(currentUrl) {
       margin-right: 10px;
       background: #00a6ed;
       color: white;
-      font-size: 14px;
+      font-size: .7vw;
       padding: 2px 6px;
       border-radius: 6px;
       z-index: 10;
@@ -363,8 +442,22 @@ function aiFun(currentUrl) {
       border-radius: 6px;
       z-index: 10;
       float: left;`;
-    } else if (currentUrl.startsWith("https://claude.ai/chat/")) {
+    } else if(currentUrl.startsWith("https://claude.ai/chat/")) {
       numberSpan.style = `
+      cursor: pointer;
+      position: sticky;
+      top: 10px;
+      margin-right: 10px;
+      background: #00a6ed;
+      color: white;
+      font-size: 14px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      z-index: 10;
+      float: right;`;
+    } else if(currentUrl.startsWith("https://gemini.google.com/app/")) {
+      numberSpan.style = `
+      max-height: 17px;
       cursor: pointer;
       position: sticky;
       top: 10px;
@@ -378,57 +471,58 @@ function aiFun(currentUrl) {
       float: right;`;
     }
 
-    browserAPI.storage.local.get('bookmarks', (result) => {
-      let bookmarks = result.bookmarks || {};
-      const current = bookmarks[currentUrl] || [];
-      if (current.includes(targetDivs.length - idx)) {
-        numberSpan.style.backgroundColor = "#D8586D";
-      }
-    });
+    const url = window.location.href;
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+    const current = bookmarks[url] || [];
+    // If already bookmarked, set orange background
+    if (current.includes(targetDivs.length - idx)) {
+      numberSpan.style.backgroundColor = "#D8586D";
+    }
 
+    // ✅ Add click listener only to the label
     numberSpan.addEventListener("click", (e) => {
       numberSpan.style.backgroundColor = "#D8586D";
-      e.stopPropagation();
-
-      browserAPI.storage.local.get('bookmarks', (result) => {
-        let bookmarks = result.bookmarks || {};
-        const current = bookmarks[currentUrl] || [];
-
-        if (!current.includes(targetDivs.length - idx)) {
-          current.push(targetDivs.length - idx);
-          showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
-          if (current.length > 3) {
-            current.shift();
-          }
-        } else {
-          showToast(`❗${targetDivs.length - idx} Already bookmarked`);
+      e.stopPropagation(); // prevent bubbling
+    
+      const url = window.location.href;
+      let bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+    
+      // Get current list for this URL, or empty array
+      const current = bookmarks[url] || [];
+    
+      if (!current.includes(targetDivs.length - idx)) {
+        // Add the number, keeping only last 3
+        current.push(targetDivs.length - idx);
+        showToast(`🔖 Bookmarked No. ${targetDivs.length - idx}`);
+        if (current.length > 3) {
+          current.shift(); // remove the oldest
         }
-
-        bookmarks[currentUrl] = current;
-        browserAPI.storage.local.set({ bookmarks });
-        bookmarksGetter();
-      });
+      } else {
+        showToast(`❗${targetDivs.length - idx} Already bookmarked`);
+      }
+    
+      bookmarks[url] = current;
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+      bookmarksGetter();
     });
-
     numberSpan.addEventListener("dblclick", (e) => {
       pinMessage((targetDivs.length - idx), targetDivs[idx].textContent.slice(0, pinnedMessageLimit));
     });
-
     div.prepend(numberSpan);
   });
 
   updateCounter();
-
+  
   function updateCounter() {
-    counter.innerText = `${targetDivs.length - currentIndex} / ${targetDivs.length}`;
+    counter.innerText = `🔍 ${targetDivs.length - currentIndex} / ${targetDivs.length}`;
   }
 
   function scrolltoItem(index) {
-    targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
-    currentIndex = index;
-    updateCounter();
+      targetDivs[index].scrollIntoView({ behavior: "smooth", block: "start" });
+      currentIndex = index;
+      updateCounter();
   }
-
+  
   function showToast(message) {
     const toast = document.createElement('div');
     toast.innerText = message;
@@ -453,88 +547,102 @@ function aiFun(currentUrl) {
   }
 
   function pinMessage(numberofMessage, message) {
-    const existing = document.querySelector('.pinned-message');
-    if (existing) {
-      existing.remove();
-    }
+      // Remove any existing pinned message
+      const existing = document.querySelector('.pinned-message');
+      if (existing) {
+        existing.remove();
+      }
+    
+      // Create pinned message container
+      const pinedMessage = document.createElement('div');
+      pinedMessage.classList.add('pinned-message');
+      pinedMessage.style = `
+        position: fixed;
+        bottom: 7vh;
+        right: 2vw;
+        max-width: 20%;
+        background-color: #00a6ed;
+        color: white;
+        padding: 10px 14px;
+        font-size: .7vw;
+        border-radius: 8px;
+        z-index: 9999;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        transition: opacity 0.3s;
+      `;
+    
+      // Add message text
+      const messageText = document.createElement('div');
+      messageText.innerText = `📌Pinned Message: ${message}...`;
+      pinedMessage.appendChild(messageText);
+    
+      // Create close button
+      const closeBtn = document.createElement('button');
+      closeBtn.innerText = 'Close';
+      closeBtn.style = `
+        margin-top: 10px;
+        background-color: white;
+        color: #00a6ed;
+        border: none;
+        padding: 5px 10px;
+        font-size: .7vw;
+        border-radius: 5px;
+        cursor: pointer;
+      `;
+      
+      // Close on click
+      closeBtn.addEventListener('click', () => {
+        pinedMessage.style.opacity = '0';
+        setTimeout(() => pinedMessage.remove(), 300);
+      });
+      
+      // Source button (e.g., "Action")
+      const sourceBtn = document.createElement('button');
+      sourceBtn.innerText = `Goto No. ${numberofMessage}`;
+      sourceBtn.style = `
+        background-color: white;
+        color: #00a6ed;
+        border: none;
+        padding: 5px 10px;
+        font-size: .7vw;
+        border-radius: 5px;
+        margin-left: 15px;
+        cursor: pointer;
+        flex: 1;
+      `;
+      sourceBtn.addEventListener('click', () => {
+        scrolltoItem(targetDivs.length - numberofMessage);
+        currentIndex = numberofMessage;
+      });
 
-    const pinedMessage = document.createElement('div');
-    pinedMessage.classList.add('pinned-message');
-    pinedMessage.style = `
-      position: fixed;
-      bottom: 7vh;
-      right: 2vw;
-      max-width: 20%;
-      background-color: #00a6ed;
-      color: white;
-      padding: 10px 14px;
-      font-size: .7vw;
-      border-radius: 8px;
-      z-index: 9999;
-      box-shadow: 0 0 8px rgba(0,0,0,0.2);
-      transition: opacity 0.3s;
-    `;
-
-    const messageText = document.createElement('div');
-    messageText.innerText = `📌Pinned Message: ${message}...`;
-    pinedMessage.appendChild(messageText);
-
-    const closeBtn = document.createElement('button');
-    closeBtn.innerText = 'Close';
-    closeBtn.style = `
-      margin-top: 10px;
-      background-color: white;
-      color: #00a6ed;
-      border: none;
-      padding: 5px 10px;
-      font-size: .7vw;
-      border-radius: 5px;
-      cursor: pointer;
-    `;
-
-    closeBtn.addEventListener('click', () => {
-      pinedMessage.style.opacity = '0';
-      setTimeout(() => pinedMessage.remove(), 300);
-    });
-
-    const sourceBtn = document.createElement('button');
-    sourceBtn.innerText = `Goto No. ${numberofMessage}`;
-    sourceBtn.style = `
-      background-color: white;
-      color: #00a6ed;
-      border: none;
-      padding: 5px 10px;
-      font-size: .7vw;
-      border-radius: 5px;
-      margin-left: 15px;
-      cursor: pointer;
-      flex: 1;
-    `;
-    sourceBtn.addEventListener('click', () => {
-      scrolltoItem((targetDivs.length - numberofMessage));
-      currentIndex = numberofMessage;
-    });
-
-    pinedMessage.appendChild(closeBtn);
-    pinedMessage.appendChild(sourceBtn);
-
-    document.body.appendChild(pinedMessage);
+      // Append buttons to the message
+      pinedMessage.appendChild(closeBtn);
+      pinedMessage.appendChild(sourceBtn);
+      
+      // Add to document
+      document.body.appendChild(pinedMessage);      
   }
+
 }
 
 // Check if extension is enabled
-browserAPI.storage.local.get('aiscroller_enabled', function(result) {
+storageGet('aiscroller_enabled', function(result) {
   if (result.aiscroller_enabled === undefined) {
-    browserAPI.storage.local.set({ aiscroller_enabled: true });
-    aiscroller_enabled = true;
-  } else {
-    aiscroller_enabled = result.aiscroller_enabled !== false;
+    storageSet({ aiscroller_enabled: true });
   }
-  if (!aiscroller_enabled) {
-    console.log('AI Scroller extension is disabled.');
+  if (result.aiscroller_enabled == false) {
+    aiscroller_enabled= false;
+    console.log(result.aiscroller_enabled)
     return;
+  }else{
+    aiscroller_enabled= true;
+    urlCheck();
+    if (window.navigation && typeof window.navigation.addEventListener === 'function') {
+      window.navigation.addEventListener("navigate", (event) => {
+        setTimeout(() => {
+          urlCheck();
+        }, 1000);
+      });
+    }
   }
-  urlCheck();
-  window.addEventListener('popstate', () => setTimeout(urlCheck, 1000));
-  window.addEventListener('hashchange', () => setTimeout(urlCheck, 1000));
 });
