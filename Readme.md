@@ -15,6 +15,7 @@
 - Jump instantly to the first or last message
 
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/hkjjhdgfolmahfakmobelcbjmedikegl.svg?label=Chrome%20Extension&color=blue)](https://chromewebstore.google.com/detail/ai-chat-scroller/hkjjhdgfolmahfakmobelcbjmedikegl)
+[![Firefox Add-ons](https://img.shields.io/amo/v/ai-chat-scroller.svg?label=Firefox%20Add-on&color=orange)](https://addons.mozilla.org/firefox/addon/ai-chat-scroller/)
 
 
 ### 🧠 Supported Platforms
