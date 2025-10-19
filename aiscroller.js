@@ -377,7 +377,18 @@ function aiFun(currentUrl){
     numberSpan.className = 'scroller-number-label';
     numberSpan.id = 'scroller-number-label' + (targetDivs.length - idx);
     numberSpan.innerText = `${targetDivs.length - idx} `;
-    
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          currentIndex= idx;
+          updateCounter();
+        }
+      });
+    });
+
+    observer.observe(numberSpan);
+
     numberSpan.style.display = localStorage.getItem('scrollerVisibility');
     numberSpan.style = `
       cursor: pointer;
