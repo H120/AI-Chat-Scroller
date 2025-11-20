@@ -1,4 +1,4 @@
-# AI Chat Scroller 1.2
+# AI Chat Scroller 1.3
 ![Logo](images/logo.png)
 
 **AI Chat Scroller** is a lightweight Chrome extension that enhances your experience on popular AI chat platforms such as ChatGPT, Gemini, Grok, Claude, and Copilot.
