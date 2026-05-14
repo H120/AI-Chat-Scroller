@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Chat Scroller",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Scroll between divs with a specific class using Up and Down buttons.",
   "permissions": ["activeTab", "storage"],
   "host_permissions": [
@@ -9,7 +9,8 @@
     "https://chatgpt.com/*",
     "https://copilot.microsoft.com/*",
     "https://claude.ai/*",
-    "https://gemini.google.com/*"
+    "https://gemini.google.com/*",
+    "https://chat.qwen.ai/*"
   ],
   "icons": {
     "128": "icon128.png"
@@ -25,7 +26,8 @@
         "https://chatgpt.com/*",
         "https://copilot.microsoft.com/*",
         "https://claude.ai/*",
-        "https://gemini.google.com/*"
+        "https://gemini.google.com/*",
+        "https://chat.qwen.ai/**"
       ],
       "js": ["aiscroller.js"]
     }

@@ -16,7 +16,9 @@ function urlCheck(){
         "https://copilot.microsoft.com/chats/",
         "copilot.microsoft.com/chats/",
         "https://gemini.google.com/app/",
-        "gemini.google.com/app/"
+        "gemini.google.com/app/",
+        "https://chat.qwen.ai/c/",
+        "chat.qwen.ai/c"
       ];
       targetDivs = [];
       if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
@@ -29,6 +31,8 @@ function urlCheck(){
         selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
       }else if (currentUrl.startsWith("https://gemini.google.com/app/") || currentUrl.startsWith("gemini.google.com/app/")) {
         selector = ['user-query' , 'model-response'];
+      }else if (currentUrl.startsWith("https://chat.qwen.ai/c") || currentUrl.startsWith("chat.qwen.ai/c")) {
+        selector = ".qwen-chat-message";
       }
       if (!validUrls.some(url => currentUrl.startsWith(url))) {
         return;
