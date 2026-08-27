@@ -1,4 +1,5 @@
 aiscroller_enabled= null;
+accentColor= "#3861FB";
 
 function urlCheck(){
   setTimeout(() => {
@@ -118,7 +119,8 @@ function initializeUi(){
   // Go to First button
   firstBtn.innerText = "↑↑";
   firstBtn.title = "Go to First";
-  firstBtn.style.backgroundColor = "#00a6ed";
+  firstBtn.style.backgroundColor = accentColor;
+  firstBtn.style.color = "white";
   firstBtn.style.border = "none";
   firstBtn.style.borderRadius = "10px 0 0 0";
   firstBtn.style.textAlign = "center";
@@ -135,7 +137,8 @@ function initializeUi(){
   // Go to Last button
   lastBtn.innerText = "↓↓";
   lastBtn.title = "Go to Last";
-  lastBtn.style.backgroundColor = "#00a6ed";
+  lastBtn.style.backgroundColor = accentColor;
+  lastBtn.style.color = "white";
   lastBtn.style.border = "none";
   lastBtn.style.borderRadius = "0 0 0 10px";
   lastBtn.style.textAlign = "center";
@@ -152,7 +155,8 @@ function initializeUi(){
   // Scroll buttons
   upBtn.innerText = "↑";
   upBtn.title = "Scroll Up";
-  upBtn.style.backgroundColor = "#00a6ed";
+  upBtn.style.backgroundColor = accentColor;
+  upBtn.style.color = "white";
   upBtn.style.border = "none";
   upBtn.style.borderRadius = "10px 0 0 0";
   upBtn.style.textAlign = "center";
@@ -168,7 +172,8 @@ function initializeUi(){
 
   downBtn.innerText = "↓";  
   downBtn.title = "Scroll Down";
-  downBtn.style.backgroundColor = "#00a6ed";
+  downBtn.style.backgroundColor = accentColor;
+  downBtn.style.color = "white";
   downBtn.style.border = "none";
   downBtn.style.borderRadius = "0 0 0 10px";
   downBtn.style.textAlign = "center";
@@ -203,7 +208,7 @@ function initializeUi(){
   toggleBtn.innerText = "AI Scroller";
   toggleBtn.style = `
   padding: 5px 8px;
-  background-color: #00a6ed;
+  background-color: accentColor;
   color: white;
   font-size: .8vw;
   font-family: 'AIScrollerFont', Arial, sans-serif !important;
@@ -400,7 +405,7 @@ function aiFun(currentUrl){
       position: sticky;
       top: 0;
       margin-right: 10px;
-      background: #00a6ed;
+      background: accentColor;
       color: white;
       font-size: .7vw;
       padding: 2px 6px;
@@ -413,7 +418,7 @@ function aiFun(currentUrl){
       position: sticky;
       top: 70px;
       margin-right: 70px;
-      background: #00a6ed;
+      background: accentColor;
       color: white;
       font-size: 14px;
       padding: 2px 6px;
@@ -426,7 +431,7 @@ function aiFun(currentUrl){
       position: sticky;
       top: 10px;
       margin-right: 10px;
-      background: #00a6ed;
+      background: accentColor;
       color: white;
       font-size: 14px;
       padding: 2px 6px;
@@ -440,7 +445,7 @@ function aiFun(currentUrl){
       position: sticky;
       top: 10px;
       margin-right: 10px;
-      background: #00a6ed;
+      background: accentColor;
       color: white;
       font-size: 14px;
       padding: 2px 6px;
@@ -508,7 +513,7 @@ function aiFun(currentUrl){
       position: fixed;
       top: 2vh;
       right: 2vw;
-      background-color: #00a6ed;
+      background-color: accentColor;
       color: white;
       padding: 10px 14px;
       font-size: .9vw;
@@ -539,7 +544,7 @@ function aiFun(currentUrl){
         bottom: 7vh;
         right: 2vw;
         max-width: 20%;
-        background-color: #00a6ed;
+        background-color: accentColor;
         color: white;
         padding: 10px 14px;
         font-size: .7vw;
@@ -560,7 +565,7 @@ function aiFun(currentUrl){
       closeBtn.style = `
         margin-top: 10px;
         background-color: white;
-        color: #00a6ed;
+        color: accentColor;
         border: none;
         padding: 5px 10px;
         font-size: .7vw;
@@ -579,7 +584,7 @@ function aiFun(currentUrl){
       sourceBtn.innerText = `Goto No. ${numberofMessage}`;
       sourceBtn.style = `
         background-color: white;
-        color: #00a6ed;
+        color: accentColor;
         border: none;
         padding: 5px 10px;
         font-size: .7vw;
