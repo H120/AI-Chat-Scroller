@@ -1,15 +1,20 @@
 aiscroller_enabled= null;
 accentColor= "#3861FB";
+let pageObserver = null;
+let activeUrl = "";
 
 function urlCheck(){
   setTimeout(() => {
     if(aiscroller_enabled){
 
       const currentUrl = window.location.href;
+      if (currentUrl === activeUrl) {
+        return;
+      }
       selector = '';
       const validUrls = [
-        "https://chatgpt.com/",
-        "chatgpt.com/",
+        "https://chatgpt.com/c",
+        "chatgpt.com/c",
         "https://grok.com/chat/",
         "grok.com/chat/",
         "https://claude.ai/chat/",
@@ -23,13 +28,13 @@ function urlCheck(){
       ];
       targetDivs = [];
       if (currentUrl.startsWith("https://chatgpt.com/c/") || currentUrl.startsWith("chatgpt.com/c/") || currentUrl.startsWith("https://chatgpt.com/share/") || currentUrl.startsWith("chatgpt.com/share/")) {
-        selector = "article.text-token-text-primary.w-full";
+        selector = '[data-message-author-role]:not([data-message-author-role=""])';
       } else if (currentUrl.startsWith("https://grok.com/chat/") || currentUrl.startsWith("grok.com/chat/")) {
         selector = ".relative.group.flex.flex-col.justify-center.w-full.max-w-3xl";
       } else if (currentUrl.startsWith("https://claude.ai/chat/") || currentUrl.startsWith("claude.ai/chat/")) {
-        selector = "div[data-test-render-count]";
+        selector = "div[data-rs-index]";
       } else if (currentUrl.startsWith("https://copilot.microsoft.com/chats/") || currentUrl.startsWith("copilot.microsoft.com/chats/")) {
-        selector = 'div[data-tabster="{&quot;groupper&quot;:{&quot;tabbability&quot;:2},&quot;focusable&quot;:{}}"], div[data-tabster]';
+        selector = '[data-tabster=\'{"groupper":{"tabbability":2},"focusable":{}}\']';
       }else if (currentUrl.startsWith("https://gemini.google.com/app/") || currentUrl.startsWith("gemini.google.com/app/")) {
         selector = ['user-query' , 'model-response'];
       }else if (currentUrl.startsWith("https://chat.qwen.ai/c") || currentUrl.startsWith("chat.qwen.ai/c")) {
@@ -38,47 +43,43 @@ function urlCheck(){
       if (!validUrls.some(url => currentUrl.startsWith(url))) {
         return;
       }else{
+        activeUrl = currentUrl;
         initializeVal();
         aiFun(currentUrl);
-        const observer = new MutationObserver((mutationsList) => {
-          for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-              mutation.addedNodes.forEach((node) => {
-                if (
-                  node.nodeType === Node.ELEMENT_NODE &&
-                  node.matches &&
-                  node.matches(selector)
-                ) {
-                  aiFun(currentUrl);
-                }
-              });
-              mutation.removedNodes.forEach((node) => {
-                if (
-                  node.nodeType === Node.ELEMENT_NODE &&
-                  node.matches &&
-                  node.matches(selector)
-                ) {
-                  aiFun(currentUrl);
-                }
-              });
-            }
+        bookmarksGetter();
+        if (pageObserver) {
+          pageObserver.disconnect();
+        }
+
+        pageObserver = new MutationObserver((mutationsList) => {
+          if (!mutationsList.some((mutation) => mutation.type === 'childList')) {
+            return;
+          }
+
+          const nextTargetDivs = [...document.querySelectorAll(selector)].reverse();
+          const itemsChanged = nextTargetDivs.length !== targetDivs.length ||
+            nextTargetDivs.some((item, index) => item !== targetDivs[index]);
+
+          if (itemsChanged) {
+            aiFun(window.location.href);
           }
         });
-        observer.observe(document.body, {
+        pageObserver.observe(document.body, {
           childList: true,
           subtree: true,
         });
         
       }
     }
-  }, 5000);
-
+  }, 3000);
 }
+
 function initializeVal(){
   pinnedMessageLimit= 200;
   currentIndex = 0;
   initializeUi();
 }
+
 function initializeUi(){
   // Add a style element to ensure consistent fonts across all websites
   const fontStyle = document.createElement('style');
@@ -341,7 +342,9 @@ function initializeUi(){
       updateCounter();
   }
   bookmarksGetter();
+
 }
+
 function bookmarksGetter(){
   const url = window.location.href;
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
@@ -373,9 +376,13 @@ function bookmarksGetter(){
     bookmarkViewer.appendChild(bookmarkBtn);
   });
 }
+
 function aiFun(currentUrl){
   // Function to update the div list
   targetDivs = [...document.querySelectorAll(selector)].reverse();
+          console.log('aiscroller_enabled:',targetDivs);
+
+  document.querySelector('.pinned-message')?.remove();
 
   // Remove existing numbers
   document.querySelectorAll('.scroller-number-label').forEach(el => el.remove());
@@ -535,6 +542,10 @@ function aiFun(currentUrl){
       if (existing) {
         existing.remove();
       }
+
+      const pinnedMessages = JSON.parse(localStorage.getItem("pinnedMessages") || "{}");
+      pinnedMessages[window.location.href] = { number: numberofMessage, message };
+      localStorage.setItem("pinnedMessages", JSON.stringify(pinnedMessages));
     
       // Create pinned message container
       const pinedMessage = document.createElement('div');
@@ -575,6 +586,9 @@ function aiFun(currentUrl){
       
       // Close on click
       closeBtn.addEventListener('click', () => {
+        const pinnedMessages = JSON.parse(localStorage.getItem("pinnedMessages") || "{}");
+        delete pinnedMessages[window.location.href];
+        localStorage.setItem("pinnedMessages", JSON.stringify(pinnedMessages));
         pinedMessage.style.opacity = '0';
         setTimeout(() => pinedMessage.remove(), 300);
       });
@@ -606,6 +620,11 @@ function aiFun(currentUrl){
       document.body.appendChild(pinedMessage);      
   }
 
+  const pinnedMessages = JSON.parse(localStorage.getItem("pinnedMessages") || "{}");
+  const pinnedMessage = pinnedMessages[currentUrl];
+  if (pinnedMessage) {
+    pinMessage(pinnedMessage.number, pinnedMessage.message);
+  }
 }
 
 // Check if extension is enabled
